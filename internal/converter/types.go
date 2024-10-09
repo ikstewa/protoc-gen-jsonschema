@@ -139,7 +139,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.OneOf = []*jsonschema.Type{
 					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_INTEGER, Format: "int32"},
+					{Type: gojsonschema.TYPE_INTEGER, Format: "int32", Minimum: -2147483648, Maximum: 2147483647},
 				}
 			} else {
 				jsonSchemaType.OneOf = []*jsonschema.Type{
@@ -151,6 +151,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "int32"
+				jsonSchemaType.Minimum = -2147483648
+				jsonSchemaType.Maximum = 2147483647
 			}
 		}
 
@@ -166,7 +168,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if messageFlags.AllowNullValues {
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.OneOf = []*jsonschema.Type{
-						{Type: gojsonschema.TYPE_INTEGER, Format: "int64"},
+						{Type: gojsonschema.TYPE_INTEGER, Format: "int64", Minimum: -9223372036854775808, Maximum: 9223372036854775807},
 						{Type: gojsonschema.TYPE_NULL},
 					}
 				} else {
@@ -179,6 +181,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 				jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.Format = "int64"
+					jsonSchemaType.Minimum = -9223372036854775808
+					jsonSchemaType.Maximum = 9223372036854775807
 				}
 			}
 		}
