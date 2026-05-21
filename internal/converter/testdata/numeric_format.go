@@ -7,6 +7,8 @@ const NumericFormat = `{
         "NumericFormat": {
             "properties": {
                 "int_val": {
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
                     "type": "integer",
                     "format": "int32"
                 },
@@ -24,6 +26,8 @@ const NumericFormat = `{
                 },
                 "int_val_array": {
                     "items": {
+                        "maximum": 2147483647,
+                        "minimum": -2147483648,
                         "type": "integer",
                         "format": "int32"
                     },

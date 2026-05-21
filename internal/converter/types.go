@@ -3,6 +3,7 @@ package converter
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/alecthomas/jsonschema"
@@ -129,17 +130,29 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			}
 		}
 
-	// Int32:
+	// Int32 family:
 	case descriptor.FieldDescriptorProto_TYPE_INT32,
 		descriptor.FieldDescriptorProto_TYPE_UINT32,
 		descriptor.FieldDescriptorProto_TYPE_FIXED32,
 		descriptor.FieldDescriptorProto_TYPE_SFIXED32,
 		descriptor.FieldDescriptorProto_TYPE_SINT32:
+
+		// Pick bounds based on the specific 32-bit type. Signed and unsigned
+		// share this case but have different valid ranges.
+		var minBound, maxBound int
+		switch desc.GetType() {
+		case descriptor.FieldDescriptorProto_TYPE_UINT32,
+			descriptor.FieldDescriptorProto_TYPE_FIXED32:
+			minBound, maxBound = 0, math.MaxUint32
+		default:
+			minBound, maxBound = math.MinInt32, math.MaxInt32
+		}
+
 		if messageFlags.AllowNullValues {
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.OneOf = []*jsonschema.Type{
 					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_INTEGER, Format: "int32"},
+					{Type: gojsonschema.TYPE_INTEGER, Format: "int32", Minimum: minBound, Maximum: maxBound},
 				}
 			} else {
 				jsonSchemaType.OneOf = []*jsonschema.Type{
@@ -151,22 +164,43 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "int32"
+				jsonSchemaType.Minimum = minBound
+				jsonSchemaType.Maximum = maxBound
 			}
 		}
 
-	// Int64:
+	// Int64 family:
 	case descriptor.FieldDescriptorProto_TYPE_INT64,
 		descriptor.FieldDescriptorProto_TYPE_UINT64,
 		descriptor.FieldDescriptorProto_TYPE_FIXED64,
 		descriptor.FieldDescriptorProto_TYPE_SFIXED64,
 		descriptor.FieldDescriptorProto_TYPE_SINT64:
 
-		// As integer:
+		// Pick bounds. UINT64 / FIXED64 max (2^64-1) overflows the signed `int`
+		// field on alecthomas/jsonschema.Type, so we skip bounds for those and
+		// keep format-only behavior. Signed 64-bit gets full bounds.
+		var minBound, maxBound int
+		hasBounds := false
+		switch desc.GetType() {
+		case descriptor.FieldDescriptorProto_TYPE_UINT64,
+			descriptor.FieldDescriptorProto_TYPE_FIXED64:
+			// bounds intentionally omitted — see comment above
+		default:
+			minBound, maxBound = math.MinInt64, math.MaxInt64
+			hasBounds = true
+		}
+
+		// As integer (when callers set disallow_bigints_as_strings):
 		if c.Flags.DisallowBigIntsAsStrings {
 			if messageFlags.AllowNullValues {
 				if c.Flags.IncludeNumericFormat {
+					intType := &jsonschema.Type{Type: gojsonschema.TYPE_INTEGER, Format: "int64"}
+					if hasBounds {
+						intType.Minimum = minBound
+						intType.Maximum = maxBound
+					}
 					jsonSchemaType.OneOf = []*jsonschema.Type{
-						{Type: gojsonschema.TYPE_INTEGER, Format: "int64"},
+						intType,
 						{Type: gojsonschema.TYPE_NULL},
 					}
 				} else {
@@ -179,6 +213,10 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 				jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.Format = "int64"
+					if hasBounds {
+						jsonSchemaType.Minimum = minBound
+						jsonSchemaType.Maximum = maxBound
+					}
 				}
 			}
 		}
@@ -345,7 +383,11 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Items.Type = jsonSchemaType.Type
 			jsonSchemaType.Items.OneOf = jsonSchemaType.OneOf
 			jsonSchemaType.Items.Format = jsonSchemaType.Format
+			jsonSchemaType.Items.Minimum = jsonSchemaType.Minimum
+			jsonSchemaType.Items.Maximum = jsonSchemaType.Maximum
 			jsonSchemaType.Format = ""
+			jsonSchemaType.Minimum = 0
+			jsonSchemaType.Maximum = 0
 		}
 
 		if messageFlags.AllowNullValues {

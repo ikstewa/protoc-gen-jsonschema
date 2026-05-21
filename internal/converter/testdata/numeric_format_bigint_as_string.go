@@ -7,10 +7,14 @@ const NumericFormatBigIntAsString = `{
         "NumericFormat": {
             "properties": {
                 "int_val": {
+                    "maximum": 2147483647,
+                    "minimum": -2147483648,
                     "type": "integer",
                     "format": "int32"
                 },
                 "long_val": {
+                    "maximum": 9223372036854775807,
+                    "minimum": -9223372036854775808,
                     "type": "integer",
                     "format": "int64"
                 },
@@ -24,6 +28,8 @@ const NumericFormatBigIntAsString = `{
                 },
                 "int_val_array": {
                     "items": {
+                        "maximum": 2147483647,
+                        "minimum": -2147483648,
                         "type": "integer",
                         "format": "int32"
                     },
@@ -31,6 +37,8 @@ const NumericFormatBigIntAsString = `{
                 },
                 "long_val_array": {
                     "items": {
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
                         "type": "integer",
                         "format": "int64"
                     },
