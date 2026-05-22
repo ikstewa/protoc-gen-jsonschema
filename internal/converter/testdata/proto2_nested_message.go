@@ -7,15 +7,10 @@ const Proto2NestedMessage = `{
         "Proto2NestedMessage": {
             "properties": {
                 "payload": {
-                    "$ref": "#/$defs/samples.Proto2PayloadMessage",
-                    "additionalProperties": {
-                        "not": true
-                    }
+                    "$ref": "#/$defs/samples.Proto2PayloadMessage"
                 },
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,
@@ -28,14 +23,10 @@ const Proto2NestedMessage = `{
         "samples.Proto2PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

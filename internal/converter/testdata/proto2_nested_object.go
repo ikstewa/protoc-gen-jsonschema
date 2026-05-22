@@ -7,15 +7,10 @@ const Proto2NestedObject = `{
         "Proto2NestedObject": {
             "properties": {
                 "payload": {
-                    "$ref": "#/$defs/samples.Proto2NestedObject.NestedPayload",
-                    "additionalProperties": {
-                        "not": true
-                    }
+                    "$ref": "#/$defs/samples.Proto2NestedObject.NestedPayload"
                 },
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,
@@ -29,14 +24,10 @@ const Proto2NestedObject = `{
         "samples.Proto2NestedObject.NestedPayload": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

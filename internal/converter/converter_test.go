@@ -2,6 +2,7 @@ package converter
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,9 +12,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/xeipuuv/gojsonschema"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	plugin "google.golang.org/protobuf/types/pluginpb"
@@ -572,22 +573,45 @@ func mustReadProtoFiles(t *testing.T, includePath string, filenames ...string) *
 	return fds
 }
 
+// validateSchema validates a JSON document against a JSON Schema string.
+// Uses github.com/santhosh-tekuri/jsonschema/v6 which supports JSON Schema
+// Draft 2020-12 (the default emitted by invopop/jsonschema). The previous
+// implementation used github.com/xeipuuv/gojsonschema, which is capped at
+// Draft 7 and cannot parse 2020-12 keywords like $defs.
 func validateSchema(jsonSchema, jsonData string) (bool, error) {
-	var valid = false
-
-	// Load the JSON schema:
-	schemaLoader := gojsonschema.NewStringLoader(jsonSchema)
-
-	// Load the JSON document we'll be validating:
-	documentLoader := gojsonschema.NewStringLoader(jsonData)
-
-	// Validate:
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil || result == nil {
-		return valid, err
+	// Parse the schema document into an `any` tree (the form AddResource expects):
+	var schemaDoc any
+	if err := json.Unmarshal([]byte(jsonSchema), &schemaDoc); err != nil {
+		return false, fmt.Errorf("validateSchema: failed to parse schema JSON: %w", err)
 	}
 
-	return result.Valid(), nil
+	compiler := jsonschema.NewCompiler()
+	// gojsonschema enforced `format` by default; santhosh-tekuri follows the
+	// 2020-12 spec where format is annotation-only unless explicitly asserted.
+	// The test goldens depend on format-as-assertion (e.g. TimestampFail
+	// expects "twelve oclock" to be rejected as not date-time), so enable it.
+	compiler.AssertFormat()
+	if err := compiler.AddResource("schema.json", schemaDoc); err != nil {
+		return false, fmt.Errorf("validateSchema: AddResource failed: %w", err)
+	}
+	sch, err := compiler.Compile("schema.json")
+	if err != nil {
+		return false, fmt.Errorf("validateSchema: Compile failed: %w", err)
+	}
+
+	// Parse the instance document:
+	var instance any
+	if err := json.Unmarshal([]byte(jsonData), &instance); err != nil {
+		return false, fmt.Errorf("validateSchema: failed to parse instance JSON: %w", err)
+	}
+
+	if err := sch.Validate(instance); err != nil {
+		// Validation failed (schema is well-formed but instance doesn't match).
+		// Match the gojsonschema contract: return (false, nil) for instance
+		// non-conformance rather than (_, err).
+		return false, nil
+	}
+	return true, nil
 }
 
 // ---------------------------------------------------------------------------

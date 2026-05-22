@@ -7,14 +7,10 @@ const OptionIgnoredField = `{
         "OptionIgnoredField": {
             "properties": {
                 "visible1": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "visible2": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,

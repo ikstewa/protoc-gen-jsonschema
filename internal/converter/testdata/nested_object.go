@@ -7,13 +7,10 @@ const NestedObject = `{
         "NestedObject": {
             "properties": {
                 "payload": {
-                    "$ref": "#/$defs/samples.NestedObject.NestedPayload",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.NestedObject.NestedPayload"
                 },
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,
@@ -23,14 +20,10 @@ const NestedObject = `{
         "samples.NestedObject.NestedPayload": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

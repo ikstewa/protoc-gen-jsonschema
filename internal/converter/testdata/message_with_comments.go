@@ -8,14 +8,10 @@ const MessageWithComments = `{
             "properties": {
                 "name1": {
                     "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0,
                     "description": "This field is supposed to represent blahblahblah"
                 },
                 "excludedComment": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,

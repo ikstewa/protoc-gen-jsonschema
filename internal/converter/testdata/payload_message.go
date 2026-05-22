@@ -7,14 +7,10 @@ const PayloadMessage = `{
         "PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

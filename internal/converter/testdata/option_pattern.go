@@ -8,8 +8,6 @@ const OptionPattern = `{
             "properties": {
                 "query": {
                     "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0,
                     "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
                 },
                 "result_per_page": {

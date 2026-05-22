@@ -7,9 +7,7 @@ const MessageKind11 = `{
         "MessageKind11": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "ones": {
                     "items": {
@@ -18,16 +16,13 @@ const MessageKind11 = `{
                     "type": "array"
                 },
                 "kind2": {
-                    "$ref": "#/$defs/samples.MessageKind2",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.MessageKind2"
                 },
                 "kind3": {
-                    "$ref": "#/$defs/samples.MessageKind3",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.MessageKind3"
                 },
                 "kind4": {
-                    "$ref": "#/$defs/samples.MessageKind4",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.MessageKind4"
                 }
             },
             "additionalProperties": true,
@@ -37,14 +32,10 @@ const MessageKind11 = `{
         "samples.MessageKind1": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -63,14 +54,10 @@ const MessageKind11 = `{
         "samples.MessageKind2": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -95,14 +82,10 @@ const MessageKind11 = `{
         "samples.MessageKind3": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -114,9 +97,7 @@ const MessageKind11 = `{
                     "type": "boolean"
                 },
                 "someProp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,
@@ -126,14 +107,10 @@ const MessageKind11 = `{
         "samples.MessageKind4": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -145,9 +122,7 @@ const MessageKind11 = `{
                     "type": "boolean"
                 },
                 "special": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,

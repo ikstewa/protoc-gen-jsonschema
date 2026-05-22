@@ -8,9 +8,7 @@ const Maps = `{
             "properties": {
                 "map_of_strings": {
                     "additionalProperties": {
-                        "type": "string",
-                        "maxLength": 0,
-                        "minLength": 0
+                        "type": "string"
                     },
                     "type": "object"
                 },
@@ -22,8 +20,7 @@ const Maps = `{
                 },
                 "map_of_messages": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/samples.PayloadMessage",
-                        "additionalProperties": true
+                        "$ref": "#/$defs/samples.PayloadMessage"
                     },
                     "type": "object"
                 }
@@ -35,14 +32,10 @@ const Maps = `{
         "samples.PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

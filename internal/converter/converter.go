@@ -12,7 +12,6 @@ import (
 	"github.com/invopop/jsonschema"
 	"github.com/iancoleman/strcase"
 	"github.com/sirupsen/logrus"
-	"github.com/xeipuuv/gojsonschema"
 	gengo "google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
@@ -189,15 +188,15 @@ func (c *Converter) convertEnumType(enum *descriptor.EnumDescriptorProto, conver
 
 	// Use basic types if we're not opting to use constants for ENUMs:
 	if !converterFlags.EnumsAsConstants {
-		jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: gojsonschema.TYPE_STRING})
+		jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: jsTypeString})
 		if !converterFlags.EnumsAsStringsOnly {
-			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: gojsonschema.TYPE_INTEGER})
+			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: jsTypeInteger})
 		}
 	}
 
 	// Optionally allow NULL values:
 	if converterFlags.AllowNullValues {
-		jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: gojsonschema.TYPE_NULL})
+		jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: jsTypeNull})
 	}
 
 	// If we end up with just one option in OneOf, unwrap it

@@ -7,9 +7,7 @@ const OptionRequiredField = `{
         "OptionRequiredField": {
             "properties": {
                 "query": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "page_number": {
                     "type": "integer"

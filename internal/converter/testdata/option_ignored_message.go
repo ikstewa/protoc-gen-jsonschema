@@ -7,14 +7,10 @@ const UnignoredMessage = `{
         "UnignoredMessage": {
             "properties": {
                 "name2": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp2": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id2": {
                     "type": "integer"

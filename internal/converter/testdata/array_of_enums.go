@@ -7,9 +7,7 @@ const ArrayOfEnums = `{
         "ArrayOfEnums": {
             "properties": {
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "stuff": {
                     "items": {

@@ -7,8 +7,7 @@ const CyclicalReferenceMessageM = `{
         "M": {
             "properties": {
                 "foo": {
-                    "$ref": "#/$defs/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -21,8 +20,7 @@ const CyclicalReferenceMessageM = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/$defs/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -35,8 +33,7 @@ const CyclicalReferenceMessageM = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/$defs/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -46,9 +43,7 @@ const CyclicalReferenceMessageM = `{
         "samples.Foo": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "bar": {
                     "items": {
@@ -71,9 +66,7 @@ const CyclicalReferenceMessageFoo = `{
         "Foo": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "bar": {
                     "items": {
@@ -92,8 +85,7 @@ const CyclicalReferenceMessageFoo = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/$defs/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -106,8 +98,7 @@ const CyclicalReferenceMessageFoo = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/$defs/Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/Foo"
                 }
             },
             "additionalProperties": true,
@@ -127,8 +118,7 @@ const CyclicalReferenceMessageBar = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/$defs/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -141,8 +131,7 @@ const CyclicalReferenceMessageBar = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/$defs/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -152,9 +141,7 @@ const CyclicalReferenceMessageBar = `{
         "samples.Foo": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "bar": {
                     "items": {
@@ -180,8 +167,7 @@ const CyclicalReferenceMessageBaz = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/$defs/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -194,8 +180,7 @@ const CyclicalReferenceMessageBaz = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/$defs/Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/Baz"
                 }
             },
             "additionalProperties": true,
@@ -205,9 +190,7 @@ const CyclicalReferenceMessageBaz = `{
         "samples.Foo": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "bar": {
                     "items": {

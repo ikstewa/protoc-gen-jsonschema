@@ -20,9 +20,7 @@ const ArrayOfObjects = `{
                             "type": "null"
                         },
                         {
-                            "type": "string",
-                            "maxLength": 0,
-                            "minLength": 0
+                            "type": "string"
                         }
                     ]
                 },
@@ -59,9 +57,7 @@ const ArrayOfObjects = `{
                             "type": "null"
                         },
                         {
-                            "type": "string",
-                            "maxLength": 0,
-                            "minLength": 0
+                            "type": "string"
                         }
                     ]
                 },
@@ -71,9 +67,7 @@ const ArrayOfObjects = `{
                             "type": "null"
                         },
                         {
-                            "type": "string",
-                            "maxLength": 0,
-                            "minLength": 0
+                            "type": "string"
                         }
                     ]
                 },

@@ -8,7 +8,6 @@ const OptionMinLength = `{
             "properties": {
                 "query": {
                     "type": "string",
-                    "maxLength": 0,
                     "minLength": 2
                 },
                 "result_per_page": {

@@ -7,14 +7,10 @@ const FirstMessage = `{
         "FirstMessage": {
             "properties": {
                 "name1": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp1": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id1": {
                     "type": "integer"

@@ -8,8 +8,7 @@ const OptionMaxLength = `{
             "properties": {
                 "query": {
                     "type": "string",
-                    "maxLength": 10,
-                    "minLength": 0
+                    "maxLength": 10
                 },
                 "result_per_page": {
                     "type": "integer"

@@ -39,12 +39,10 @@ const OneOf = `{
             ],
             "properties": {
                 "bar": {
-                    "$ref": "#/$defs/samples.OneOf.Bar",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.OneOf.Bar"
                 },
                 "baz": {
-                    "$ref": "#/$defs/samples.OneOf.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.OneOf.Baz"
                 },
                 "something": {
                     "type": "boolean"
@@ -73,9 +71,7 @@ const OneOf = `{
         "samples.OneOf.Baz": {
             "properties": {
                 "foo": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,

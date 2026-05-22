@@ -7,13 +7,10 @@ const NestedMessage = `{
         "NestedMessage": {
             "properties": {
                 "payload": {
-                    "$ref": "#/$defs/samples.PayloadMessage",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.PayloadMessage"
                 },
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 }
             },
             "additionalProperties": true,
@@ -23,14 +20,10 @@ const NestedMessage = `{
         "samples.PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

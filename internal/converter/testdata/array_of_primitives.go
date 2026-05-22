@@ -20,9 +20,7 @@ const ArrayOfPrimitives = `{
                             "type": "null"
                         },
                         {
-                            "type": "string",
-                            "maxLength": 0,
-                            "minLength": 0
+                            "type": "string"
                         }
                     ]
                 },
@@ -81,9 +79,7 @@ const ArrayOfPrimitives = `{
                                 "type": "null"
                             },
                             {
-                                "type": "string",
-                                "maxLength": 0,
-                                "minLength": 0
+                                "type": "string"
                             }
                         ]
                     }
@@ -129,9 +125,7 @@ const ArrayOfPrimitivesDouble = `{
                             "type": "null"
                         },
                         {
-                            "type": "string",
-                            "maxLength": 0,
-                            "minLength": 0
+                            "type": "string"
                         }
                     ]
                 },
@@ -190,9 +184,7 @@ const ArrayOfPrimitivesDouble = `{
                                 "type": "null"
                             },
                             {
-                                "type": "string",
-                                "maxLength": 0,
-                                "minLength": 0
+                                "type": "string"
                             }
                         ]
                     }

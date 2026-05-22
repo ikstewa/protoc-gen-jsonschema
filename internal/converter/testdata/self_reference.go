@@ -7,9 +7,7 @@ const SelfReference = `{
         "Foo": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "bar": {
                     "items": {

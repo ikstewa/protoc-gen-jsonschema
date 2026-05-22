@@ -7,9 +7,7 @@ const BytesPayload = `{
         "BytesPayload": {
             "properties": {
                 "description": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "payload": {
                     "type": "string",

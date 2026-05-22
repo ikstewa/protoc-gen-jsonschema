@@ -6,12 +6,24 @@ import (
 
 	"github.com/invopop/jsonschema"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
-	"github.com/xeipuuv/gojsonschema"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 
 	protoc_gen_jsonschema "github.com/ikstewa/protoc-gen-jsonschema"
 	protoc_gen_validate "github.com/envoyproxy/protoc-gen-validate/validate"
+)
+
+// JSON Schema primitive type vocabulary (Draft 2020-12). Defined locally so we
+// don't depend on github.com/xeipuuv/gojsonschema just for these string
+// constants. These values are part of the stable JSON Schema spec.
+const (
+	jsTypeNull    = "null"
+	jsTypeBoolean = "boolean"
+	jsTypeObject  = "object"
+	jsTypeArray   = "array"
+	jsTypeNumber  = "number"
+	jsTypeString  = "string"
+	jsTypeInteger = "integer"
 )
 
 var (
@@ -91,17 +103,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		if messageFlags.AllowNullValues {
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_NUMBER, Format: "float"},
+					{Type: jsTypeNull},
+					{Type: jsTypeNumber, Format: "float"},
 				}
 			} else {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_NUMBER},
+					{Type: jsTypeNull},
+					{Type: jsTypeNumber},
 				}
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_NUMBER
+			jsonSchemaType.Type = jsTypeNumber
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "float"
 			}
@@ -112,17 +124,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		if messageFlags.AllowNullValues {
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_NUMBER, Format: "double"},
+					{Type: jsTypeNull},
+					{Type: jsTypeNumber, Format: "double"},
 				}
 			} else {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_NUMBER},
+					{Type: jsTypeNull},
+					{Type: jsTypeNumber},
 				}
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_NUMBER
+			jsonSchemaType.Type = jsTypeNumber
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "double"
 			}
@@ -137,17 +149,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		if messageFlags.AllowNullValues {
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_INTEGER, Format: "int32"},
+					{Type: jsTypeNull},
+					{Type: jsTypeInteger, Format: "int32"},
 				}
 			} else {
 				jsonSchemaType.OneOf = []*jsonschema.Schema{
-					{Type: gojsonschema.TYPE_NULL},
-					{Type: gojsonschema.TYPE_INTEGER},
+					{Type: jsTypeNull},
+					{Type: jsTypeInteger},
 				}
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
+			jsonSchemaType.Type = jsTypeInteger
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "int32"
 			}
@@ -165,17 +177,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if messageFlags.AllowNullValues {
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.OneOf = []*jsonschema.Schema{
-						{Type: gojsonschema.TYPE_INTEGER, Format: "int64"},
-						{Type: gojsonschema.TYPE_NULL},
+						{Type: jsTypeInteger, Format: "int64"},
+						{Type: jsTypeNull},
 					}
 				} else {
 					jsonSchemaType.OneOf = []*jsonschema.Schema{
-						{Type: gojsonschema.TYPE_INTEGER},
-						{Type: gojsonschema.TYPE_NULL},
+						{Type: jsTypeInteger},
+						{Type: jsTypeNull},
 					}
 				}
 			} else {
-				jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
+				jsonSchemaType.Type = jsTypeInteger
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.Format = "int64"
 				}
@@ -187,17 +199,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if messageFlags.AllowNullValues {
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.OneOf = []*jsonschema.Schema{
-						{Type: gojsonschema.TYPE_STRING, Format: "int64"},
-						{Type: gojsonschema.TYPE_NULL},
+						{Type: jsTypeString, Format: "int64"},
+						{Type: jsTypeNull},
 					}
 				} else {
 					jsonSchemaType.OneOf = []*jsonschema.Schema{
-						{Type: gojsonschema.TYPE_STRING},
-						{Type: gojsonschema.TYPE_NULL},
+						{Type: jsTypeString},
+						{Type: jsTypeNull},
 					}
 				}
 			} else {
-				jsonSchemaType.Type = gojsonschema.TYPE_STRING
+				jsonSchemaType.Type = jsTypeString
 				if c.Flags.IncludeNumericFormat {
 					jsonSchemaType.Format = "int64"
 				}
@@ -206,7 +218,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 
 	// String:
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
-		stringDef := &jsonschema.Schema{Type: gojsonschema.TYPE_STRING}
+		stringDef := &jsonschema.Schema{Type: jsTypeString}
 
 		// Custom field options from protoc-gen-jsonschema:
 		if opt := proto.GetExtension(desc.GetOptions(), protoc_gen_jsonschema.E_FieldOptions); opt != nil {
@@ -230,7 +242,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 
 		if messageFlags.AllowNullValues {
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_NULL},
+				{Type: jsTypeNull},
 				stringDef,
 			}
 		} else {
@@ -244,15 +256,15 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
 		if messageFlags.AllowNullValues {
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_NULL},
+				{Type: jsTypeNull},
 				{
-					Type:           gojsonschema.TYPE_STRING,
+					Type:           jsTypeString,
 					Format:         "binary",
 					ContentEncoding: "base64",
 				},
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_STRING
+			jsonSchemaType.Type = jsTypeString
 			jsonSchemaType.Format = "binary"
 			jsonSchemaType.ContentEncoding = "base64"
 		}
@@ -283,11 +295,11 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
 		if messageFlags.AllowNullValues {
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_NULL},
-				{Type: gojsonschema.TYPE_BOOLEAN},
+				{Type: jsTypeNull},
+				{Type: jsTypeBoolean},
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_BOOLEAN
+			jsonSchemaType.Type = jsTypeBoolean
 		}
 
 	// Group (object):
@@ -296,17 +308,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		switch desc.GetTypeName() {
 		// Make sure that durations match a particular string pattern (eg 3.4s):
 		case ".google.protobuf.Duration":
-			jsonSchemaType.Type = gojsonschema.TYPE_STRING
+			jsonSchemaType.Type = jsTypeString
 			jsonSchemaType.Format = "regex"
 			jsonSchemaType.Pattern = `^([0-9]+\.?[0-9]*|\.[0-9]+)s$`
 		case ".google.protobuf.Timestamp":
-			jsonSchemaType.Type = gojsonschema.TYPE_STRING
+			jsonSchemaType.Type = jsTypeString
 			jsonSchemaType.Format = "date-time"
 		case ".google.protobuf.Value", ".google.protobuf.Struct":
-			jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
+			jsonSchemaType.Type = jsTypeObject
 			jsonSchemaType.AdditionalProperties = schemaAllowAny()
 		default:
-			jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
+			jsonSchemaType.Type = jsTypeObject
 			if desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_OPTIONAL {
 				jsonSchemaType.AdditionalProperties = schemaAllowAny()
 			}
@@ -323,7 +335,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 	}
 
 	// Recurse basic array:
-	if desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REPEATED && jsonSchemaType.Type != gojsonschema.TYPE_OBJECT {
+	if desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REPEATED && jsonSchemaType.Type != jsTypeObject {
 		jsonSchemaType.Items = &jsonschema.Schema{}
 
 		// Custom field options from protoc-gen-validate:
@@ -349,18 +361,18 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 
 		if messageFlags.AllowNullValues {
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_NULL},
-				{Type: gojsonschema.TYPE_ARRAY},
+				{Type: jsTypeNull},
+				{Type: jsTypeArray},
 			}
 		} else {
-			jsonSchemaType.Type = gojsonschema.TYPE_ARRAY
+			jsonSchemaType.Type = jsTypeArray
 			jsonSchemaType.OneOf = []*jsonschema.Schema{}
 		}
 		return jsonSchemaType, nil
 	}
 
 	// Recurse nested objects / arrays of objects (if necessary):
-	if jsonSchemaType.Type == gojsonschema.TYPE_OBJECT {
+	if jsonSchemaType.Type == jsTypeObject {
 
 		recordType, pkgName, ok := c.lookupType(curPkg, desc.GetTypeName())
 		if !ok {
@@ -400,7 +412,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		// Arrays:
 		case desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REPEATED:
 			jsonSchemaType.Items = recursedJSONSchemaType
-			jsonSchemaType.Type = gojsonschema.TYPE_ARRAY
+			jsonSchemaType.Type = jsTypeArray
 
 			// Build up the list of required fields:
 			if messageFlags.AllFieldsRequired && len(recursedJSONSchemaType.OneOf) == 0 && recursedJSONSchemaType.Properties != nil {
@@ -419,7 +431,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			}
 
 			// If we're not an object then set the type from whatever we recursed:
-			if recursedJSONSchemaType.Type != gojsonschema.TYPE_OBJECT {
+			if recursedJSONSchemaType.Type != jsTypeObject {
 				jsonSchemaType.Type = recursedJSONSchemaType.Type
 			}
 
@@ -427,6 +439,18 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Properties = recursedJSONSchemaType.Properties
 			jsonSchemaType.Ref = recursedJSONSchemaType.Ref
 			jsonSchemaType.Required = recursedJSONSchemaType.Required
+
+			// In Draft 2020-12, sibling keywords on a $ref schema are applied
+			// (unlike Draft 4-7 where $ref was exclusive). The wrapping schema
+			// here previously set Type=object and AdditionalProperties=...
+			// based on the field's label; those become real constraints under
+			// 2020-12 (e.g. additionalProperties: {not: true} forbids all
+			// properties on the referenced object) and corrupt validation.
+			// Clear them so the $ref alone delegates to the target schema.
+			if jsonSchemaType.Ref != "" {
+				jsonSchemaType.Type = ""
+				jsonSchemaType.AdditionalProperties = nil
+			}
 
 			// Build up the list of required fields:
 			if messageFlags.AllFieldsRequired && len(recursedJSONSchemaType.OneOf) == 0 && recursedJSONSchemaType.Properties != nil {
@@ -439,7 +463,7 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		// Optionally allow NULL values:
 		if messageFlags.AllowNullValues {
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_NULL},
+				{Type: jsTypeNull},
 				{Type: jsonSchemaType.Type, Items: jsonSchemaType.Items},
 			}
 			jsonSchemaType.Type = ""
@@ -579,44 +603,44 @@ func (c *Converter) recursiveConvertMessageType(curPkg *ProtoPackage, msgDesc *d
 	if msgDesc.Name != nil && wellKnownTypes[*msgDesc.Name] && pkgName == ".google.protobuf" {
 		switch *msgDesc.Name {
 		case "DoubleValue", "FloatValue":
-			jsonSchemaType.Type = gojsonschema.TYPE_NUMBER
+			jsonSchemaType.Type = jsTypeNumber
 		case "Int32Value", "UInt32Value":
-			jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
+			jsonSchemaType.Type = jsTypeInteger
 		case "Int64Value", "UInt64Value":
 			// BigInt as ints
 			if messageFlags.DisallowBigIntsAsStrings {
-				jsonSchemaType.Type = gojsonschema.TYPE_INTEGER
+				jsonSchemaType.Type = jsTypeInteger
 			} else {
 
 				// BigInt as strings
-				jsonSchemaType.Type = gojsonschema.TYPE_STRING
+				jsonSchemaType.Type = jsTypeString
 			}
 
 		case "BoolValue":
-			jsonSchemaType.Type = gojsonschema.TYPE_BOOLEAN
+			jsonSchemaType.Type = jsTypeBoolean
 		case "BytesValue", "StringValue":
-			jsonSchemaType.Type = gojsonschema.TYPE_STRING
+			jsonSchemaType.Type = jsTypeString
 		case "Value":
 			jsonSchemaType.OneOf = []*jsonschema.Schema{
-				{Type: gojsonschema.TYPE_ARRAY},
-				{Type: gojsonschema.TYPE_BOOLEAN},
-				{Type: gojsonschema.TYPE_NUMBER},
-				{Type: gojsonschema.TYPE_OBJECT},
-				{Type: gojsonschema.TYPE_STRING},
+				{Type: jsTypeArray},
+				{Type: jsTypeBoolean},
+				{Type: jsTypeNumber},
+				{Type: jsTypeObject},
+				{Type: jsTypeString},
 			}
 			// jsonSchemaType.AdditionalProperties = []byte("true")
 		case "Duration":
-			jsonSchemaType.Type = gojsonschema.TYPE_STRING
+			jsonSchemaType.Type = jsTypeString
 		case "Struct":
-			jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
+			jsonSchemaType.Type = jsTypeObject
 			// jsonSchemaType.AdditionalProperties = []byte("true")
 		case "ListValue":
-			jsonSchemaType.Type = gojsonschema.TYPE_ARRAY
+			jsonSchemaType.Type = jsTypeArray
 		}
 
 		// If we're allowing nulls then prepare a OneOf:
 		if messageFlags.AllowNullValues {
-			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: gojsonschema.TYPE_NULL}, &jsonschema.Schema{Type: jsonSchemaType.Type})
+			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Type: jsTypeNull}, &jsonschema.Schema{Type: jsonSchemaType.Type})
 			// and clear the Type that was previously set.
 			jsonSchemaType.Type = ""
 			return jsonSchemaType, nil
@@ -645,11 +669,11 @@ func (c *Converter) recursiveConvertMessageType(curPkg *ProtoPackage, msgDesc *d
 	// Optionally allow NULL values:
 	if messageFlags.AllowNullValues {
 		jsonSchemaType.OneOf = []*jsonschema.Schema{
-			{Type: gojsonschema.TYPE_NULL},
-			{Type: gojsonschema.TYPE_OBJECT},
+			{Type: jsTypeNull},
+			{Type: jsTypeObject},
 		}
 	} else {
-		jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
+		jsonSchemaType.Type = jsTypeObject
 	}
 
 	// disallowAdditionalProperties will prevent validation where extra fields are found (outside of the schema):
@@ -769,7 +793,14 @@ func dedupe(inputStrings []string) []string {
 
 // ptrUint64 returns a pointer to a uint64 with the given value, for use with
 // invopop/jsonschema fields like MaxLength / MaxItems which are typed *uint64.
+// A zero value is treated as "unset" and returns nil so the field is omitted
+// from the rendered schema rather than emitted as `0` — proto field options
+// like min_length / max_length default to 0 meaning "no constraint", and
+// emitting `maxLength: 0` would forbid any non-empty string.
 func ptrUint64(v uint64) *uint64 {
+	if v == 0 {
+		return nil
+	}
 	return &v
 }
 

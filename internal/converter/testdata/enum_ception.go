@@ -7,14 +7,10 @@ const EnumCeption = `{
         "Enumception": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -44,8 +40,7 @@ const EnumCeption = `{
                     "description": "FailureModes enum"
                 },
                 "payload": {
-                    "$ref": "#/$defs/samples.PayloadMessage",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.PayloadMessage"
                 },
                 "payloads": {
                     "items": {
@@ -109,14 +104,10 @@ const EnumCeption = `{
         "samples.PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "timestamp": {
-                    "type": "string",
-                    "maxLength": 0,
-                    "minLength": 0
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
