@@ -227,9 +227,9 @@ func (c *Converter) convertEnumType(enum *descriptor.EnumDescriptorProto, conver
 		// If we're using constants for ENUMs then add these here, along with their title:
 		if converterFlags.EnumsAsConstants {
 			c.schemaVersion = versionDraft06 // Const requires draft-06
-			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Extras: map[string]interface{}{"const": valueName}, Description: valueDescription})
+			jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Const: valueName, Description: valueDescription})
 			if !converterFlags.EnumsAsStringsOnly {
-				jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Extras: map[string]interface{}{"const": value.GetNumber()}, Description: valueDescription})
+				jsonSchemaType.OneOf = append(jsonSchemaType.OneOf, &jsonschema.Schema{Const: value.GetNumber(), Description: valueDescription})
 			}
 		}
 
