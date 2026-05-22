@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -83,8 +86,20 @@ func testConvertSampleProto(t *testing.T, sampleProto sampleProto) {
 	} else {
 		for responseFileIndex, responseFile := range response.File {
 
+			expected := strings.TrimSpace(sampleProto.ExpectedJSONSchema[responseFileIndex])
+			actual := responseFile.GetContent()
+
+			// UPDATE_GOLDENS=1 rewrites the matching testdata const in place
+			// instead of asserting. See updateGoldenForExpected for details.
+			if os.Getenv("UPDATE_GOLDENS") == "1" {
+				if err := updateGoldenForExpected(t, expected, actual); err != nil {
+					t.Fatalf("UPDATE_GOLDENS: %v (proto=%v idx=%d)", err, sampleProtoFileName, responseFileIndex)
+				}
+				continue
+			}
+
 			// Ensure that the generated schema matches the expected (canned) one:
-			assert.Equal(t, strings.TrimSpace(sampleProto.ExpectedJSONSchema[responseFileIndex]), responseFile.GetContent(), "Incorrect JSON-Schema returned for sample proto file (%v)", sampleProtoFileName)
+			assert.Equal(t, expected, actual, "Incorrect JSON-Schema returned for sample proto file (%v)", sampleProtoFileName)
 
 			// Validate the generated filenames:
 			if len(sampleProto.ExpectedFileNames) > 0 {
@@ -573,4 +588,116 @@ func validateSchema(jsonSchema, jsonData string) (bool, error) {
 	}
 
 	return result.Valid(), nil
+}
+
+// ---------------------------------------------------------------------------
+// UPDATE_GOLDENS support
+// ---------------------------------------------------------------------------
+//
+// When the env var UPDATE_GOLDENS=1 is set, the test harness rewrites the
+// matching testdata const in place instead of asserting equality. Because
+// the test feeds canned expected JSON via the `testdata.<Name>` constants
+// (and ExpectedJSONSchema is just a []string), we recover the source const
+// name by content-matching against an index built from every *.go file in
+// testdata/. This sidesteps having to thread const names through the
+// sampleProto table.
+
+type goldenLocation struct {
+	filePath  string
+	constName string
+}
+
+var (
+	goldenIndexOnce sync.Once
+	goldenIndex     map[string]goldenLocation // key = strings.TrimSpace(constBody)
+	goldenIndexErr  error
+)
+
+// goldenConstRE captures a top-level `const <Name> = ` + "`" + `<body>` + "`" + ` definition
+// in a testdata file. We rely on the convention that every golden const uses
+// raw-string (backtick) literals, which the existing files do.
+var goldenConstRE = regexp.MustCompile("(?s)const\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*`([^`]*)`")
+
+func loadGoldenIndex() (map[string]goldenLocation, error) {
+	goldenIndexOnce.Do(func() {
+		idx := map[string]goldenLocation{}
+		entries, err := os.ReadDir("testdata")
+		if err != nil {
+			goldenIndexErr = fmt.Errorf("reading testdata dir: %w", err)
+			return
+		}
+		for _, e := range entries {
+			if e.IsDir() || !strings.HasSuffix(e.Name(), ".go") {
+				continue
+			}
+			path := filepath.Join("testdata", e.Name())
+			b, err := os.ReadFile(path)
+			if err != nil {
+				goldenIndexErr = fmt.Errorf("reading %s: %w", path, err)
+				return
+			}
+			for _, m := range goldenConstRE.FindAllSubmatch(b, -1) {
+				key := strings.TrimSpace(string(m[2]))
+				idx[key] = goldenLocation{filePath: path, constName: string(m[1])}
+			}
+		}
+		goldenIndex = idx
+	})
+	return goldenIndex, goldenIndexErr
+}
+
+// updateGoldenForExpected looks up the const whose current value matches
+// `expected` and rewrites its body to `actual` in the corresponding
+// testdata/*.go file. Surgical replacement preserves any other consts in
+// the same file (e.g. <Name>Fail / <Name>Pass).
+func updateGoldenForExpected(t *testing.T, expected, actual string) error {
+	t.Helper()
+
+	if strings.ContainsRune(actual, '`') {
+		return fmt.Errorf("actual content contains a backtick; cannot encode as raw-string const")
+	}
+
+	idx, err := loadGoldenIndex()
+	if err != nil {
+		return err
+	}
+	loc, ok := idx[expected]
+	if !ok {
+		return fmt.Errorf("no testdata const matched the expected JSON (len=%d); add the const first or check for drift", len(expected))
+	}
+
+	b, err := os.ReadFile(loc.filePath)
+	if err != nil {
+		return fmt.Errorf("reading %s: %w", loc.filePath, err)
+	}
+
+	// Replace just the targeted const's body. We anchor on the exact const
+	// name to avoid clobbering sibling Fail/Pass consts. Use a func-based
+	// replacement so `$` in `actual` (e.g. "$schema", "$ref") is treated
+	// literally rather than as a regexp substitution token.
+	pattern := regexp.MustCompile("(?s)(const\\s+" + regexp.QuoteMeta(loc.constName) + "\\s*=\\s*`)[^`]*(`)")
+	if !pattern.Match(b) {
+		return fmt.Errorf("regex failed to locate const %s in %s", loc.constName, loc.filePath)
+	}
+	updated := pattern.ReplaceAllFunc(b, func(match []byte) []byte {
+		sub := pattern.FindSubmatchIndex(match)
+		prefix := match[sub[2]:sub[3]] // group 1: `const Name = ` + backtick
+		suffix := match[sub[4]:sub[5]] // group 2: trailing backtick
+		out := make([]byte, 0, len(prefix)+len(actual)+len(suffix))
+		out = append(out, prefix...)
+		out = append(out, actual...)
+		out = append(out, suffix...)
+		return out
+	})
+	if bytes.Equal(updated, b) {
+		// Content already up to date — no-op.
+		return nil
+	}
+
+	if err := os.WriteFile(loc.filePath, updated, 0644); err != nil {
+		return fmt.Errorf("writing %s: %w", loc.filePath, err)
+	}
+
+	t.Logf("UPDATE_GOLDENS: rewrote const %s in %s", loc.constName, loc.filePath)
+	return nil
 }
