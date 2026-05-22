@@ -1,16 +1,20 @@
 package testdata
 
 const OptionDisallowAdditionalProperties = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionDisallowAdditionalProperties",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionDisallowAdditionalProperties",
+    "$defs": {
         "OptionDisallowAdditionalProperties": {
             "properties": {
                 "name2": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp2": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id2": {
                     "type": "integer"
@@ -22,7 +26,9 @@ const OptionDisallowAdditionalProperties = `{
                     "type": "boolean"
                 }
             },
-            "additionalProperties": false,
+            "additionalProperties": {
+                "not": true
+            },
             "type": "object",
             "title": "Option Disallow Additional Properties"
         }

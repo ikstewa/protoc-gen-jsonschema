@@ -1,7 +1,15 @@
 package testdata
 
 const FirstEnum = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "oneOf": [
+        {
+            "type": "string"
+        },
+        {
+            "type": "integer"
+        }
+    ],
     "enum": [
         "VALUE_0",
         0,
@@ -11,14 +19,6 @@ const FirstEnum = `{
         2,
         "VALUE_3",
         3
-    ],
-    "oneOf": [
-        {
-            "type": "string"
-        },
-        {
-            "type": "integer"
-        }
     ],
     "title": "First Enum"
 }`

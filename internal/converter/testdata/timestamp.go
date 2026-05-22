@@ -1,9 +1,9 @@
 package testdata
 
 const Timestamp = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Timestamp",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Timestamp",
+    "$defs": {
         "Timestamp": {
             "properties": {
                 "timestamp": {

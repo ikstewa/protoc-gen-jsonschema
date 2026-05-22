@@ -1,18 +1,20 @@
 package testdata
 
 const BytesPayload = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/BytesPayload",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/BytesPayload",
+    "$defs": {
         "BytesPayload": {
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "payload": {
                     "type": "string",
                     "format": "binary",
-                    "binaryEncoding": "base64"
+                    "contentEncoding": "base64"
                 }
             },
             "additionalProperties": true,

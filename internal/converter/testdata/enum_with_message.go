@@ -1,20 +1,12 @@
 package testdata
 
 const EnumWithMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/WithFooBarBaz",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/WithFooBarBaz",
+    "$defs": {
         "WithFooBarBaz": {
             "properties": {
                 "enumField": {
-                    "enum": [
-                        "Foo",
-                        0,
-                        "Bar",
-                        1,
-                        "Baz",
-                        2
-                    ],
                     "oneOf": [
                         {
                             "type": "string"
@@ -22,6 +14,14 @@ const EnumWithMessage = `{
                         {
                             "type": "integer"
                         }
+                    ],
+                    "enum": [
+                        "Foo",
+                        0,
+                        "Bar",
+                        1,
+                        "Baz",
+                        2
                     ],
                     "title": "Foo Bar Baz"
                 }

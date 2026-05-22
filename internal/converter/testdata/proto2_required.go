@@ -1,16 +1,15 @@
 package testdata
 
 const Proto2Required = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Proto2Required",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Proto2Required",
+    "$defs": {
         "Proto2Required": {
-            "required": [
-                "query"
-            ],
             "properties": {
                 "query": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "page_number": {
                     "type": "integer"
@@ -21,6 +20,9 @@ const Proto2Required = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "query"
+            ],
             "title": "Proto 2 Required"
         }
     }

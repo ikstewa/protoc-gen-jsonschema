@@ -1,17 +1,21 @@
 package testdata
 
 const MessageWithComments = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/MessageWithComments",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/MessageWithComments",
+    "$defs": {
         "MessageWithComments": {
             "properties": {
                 "name1": {
                     "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0,
                     "description": "This field is supposed to represent blahblahblah"
                 },
                 "excludedComment": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,

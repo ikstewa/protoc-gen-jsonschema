@@ -1,17 +1,15 @@
 package testdata
 
 const OptionMaxLength = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionMaxLength",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionMaxLength",
+    "$defs": {
         "OptionMaxLength": {
-            "required": [
-                "query"
-            ],
             "properties": {
                 "query": {
+                    "type": "string",
                     "maxLength": 10,
-                    "type": "string"
+                    "minLength": 0
                 },
                 "result_per_page": {
                     "type": "integer"
@@ -19,6 +17,9 @@ const OptionMaxLength = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "query"
+            ],
             "title": "Option Max Length"
         }
     }

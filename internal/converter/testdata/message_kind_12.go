@@ -1,28 +1,30 @@
 package testdata
 
 const MessageKind12 = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/MessageKind12",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/MessageKind12",
+    "$defs": {
         "MessageKind12": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "f": {
-                    "$ref": "#/definitions/samples.MessageKind11",
+                    "$ref": "#/$defs/samples.MessageKind11",
                     "additionalProperties": true
                 },
                 "kind5": {
-                    "$ref": "#/definitions/samples.MessageKind5",
+                    "$ref": "#/$defs/samples.MessageKind5",
                     "additionalProperties": true
                 },
                 "kind6": {
-                    "$ref": "#/definitions/samples.MessageKind6",
+                    "$ref": "#/$defs/samples.MessageKind6",
                     "additionalProperties": true
                 },
                 "kind7": {
-                    "$ref": "#/definitions/samples.MessageKind7",
+                    "$ref": "#/$defs/samples.MessageKind7",
                     "additionalProperties": true
                 }
             },
@@ -33,10 +35,14 @@ const MessageKind12 = `{
         "samples.MessageKind1": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -55,24 +61,26 @@ const MessageKind12 = `{
         "samples.MessageKind11": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "ones": {
                     "items": {
-                        "$ref": "#/definitions/samples.MessageKind1"
+                        "$ref": "#/$defs/samples.MessageKind1"
                     },
                     "type": "array"
                 },
                 "kind2": {
-                    "$ref": "#/definitions/samples.MessageKind2",
+                    "$ref": "#/$defs/samples.MessageKind2",
                     "additionalProperties": true
                 },
                 "kind3": {
-                    "$ref": "#/definitions/samples.MessageKind3",
+                    "$ref": "#/$defs/samples.MessageKind3",
                     "additionalProperties": true
                 },
                 "kind4": {
-                    "$ref": "#/definitions/samples.MessageKind4",
+                    "$ref": "#/$defs/samples.MessageKind4",
                     "additionalProperties": true
                 }
             },
@@ -83,10 +91,14 @@ const MessageKind12 = `{
         "samples.MessageKind2": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -111,10 +123,14 @@ const MessageKind12 = `{
         "samples.MessageKind3": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -126,7 +142,9 @@ const MessageKind12 = `{
                     "type": "boolean"
                 },
                 "someProp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,
@@ -136,10 +154,14 @@ const MessageKind12 = `{
         "samples.MessageKind4": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -151,7 +173,9 @@ const MessageKind12 = `{
                     "type": "boolean"
                 },
                 "special": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,
@@ -161,10 +185,14 @@ const MessageKind12 = `{
         "samples.MessageKind5": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -186,10 +214,14 @@ const MessageKind12 = `{
         "samples.MessageKind6": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -201,7 +233,9 @@ const MessageKind12 = `{
                     "type": "boolean"
                 },
                 "bar": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,
@@ -211,10 +245,14 @@ const MessageKind12 = `{
         "samples.MessageKind7": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"

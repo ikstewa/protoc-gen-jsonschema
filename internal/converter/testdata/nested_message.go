@@ -1,17 +1,19 @@
 package testdata
 
 const NestedMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/NestedMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/NestedMessage",
+    "$defs": {
         "NestedMessage": {
             "properties": {
                 "payload": {
-                    "$ref": "#/definitions/samples.PayloadMessage",
+                    "$ref": "#/$defs/samples.PayloadMessage",
                     "additionalProperties": true
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,
@@ -21,10 +23,14 @@ const NestedMessage = `{
         "samples.PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -36,6 +42,14 @@ const NestedMessage = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -49,14 +63,6 @@ const NestedMessage = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

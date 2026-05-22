@@ -1,16 +1,20 @@
 package testdata
 
 const FirstMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/FirstMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/FirstMessage",
+    "$defs": {
         "FirstMessage": {
             "properties": {
                 "name1": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp1": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id1": {
                     "type": "integer"

@@ -1,10 +1,18 @@
 package testdata
 
 const BigIntAsString = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/BigIntAsString",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/BigIntAsString",
+    "$defs": {
         "BigIntAsString": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object"
+                }
+            ],
             "properties": {
                 "big_number": {
                     "oneOf": [
@@ -18,14 +26,6 @@ const BigIntAsString = `{
                 }
             },
             "additionalProperties": true,
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object"
-                }
-            ],
             "title": "Big Int As String"
         }
     }

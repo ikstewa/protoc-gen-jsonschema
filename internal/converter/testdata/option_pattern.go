@@ -1,17 +1,16 @@
 package testdata
 
 const OptionPattern = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionPattern",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionPattern",
+    "$defs": {
         "OptionPattern": {
-            "required": [
-                "query"
-            ],
             "properties": {
                 "query": {
-                    "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0,
+                    "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
                 },
                 "result_per_page": {
                     "type": "integer"
@@ -19,6 +18,9 @@ const OptionPattern = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "query"
+            ],
             "title": "Option Pattern"
         }
     }

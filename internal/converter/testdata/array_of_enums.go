@@ -1,13 +1,15 @@
 package testdata
 
 const ArrayOfEnums = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ArrayOfEnums",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ArrayOfEnums",
+    "$defs": {
         "ArrayOfEnums": {
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "stuff": {
                     "items": {

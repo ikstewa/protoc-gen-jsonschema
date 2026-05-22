@@ -1,14 +1,16 @@
 package testdata
 
 const Maps = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Maps",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Maps",
+    "$defs": {
         "Maps": {
             "properties": {
                 "map_of_strings": {
                     "additionalProperties": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 0,
+                        "minLength": 0
                     },
                     "type": "object"
                 },
@@ -20,7 +22,7 @@ const Maps = `{
                 },
                 "map_of_messages": {
                     "additionalProperties": {
-                        "$ref": "#/definitions/samples.PayloadMessage",
+                        "$ref": "#/$defs/samples.PayloadMessage",
                         "additionalProperties": true
                     },
                     "type": "object"
@@ -33,10 +35,14 @@ const Maps = `{
         "samples.PayloadMessage": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -48,6 +54,14 @@ const Maps = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -61,14 +75,6 @@ const Maps = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

@@ -1,17 +1,15 @@
 package testdata
 
 const OptionRequiredField = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionRequiredField",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionRequiredField",
+    "$defs": {
         "OptionRequiredField": {
-            "required": [
-                "query",
-                "page_number"
-            ],
             "properties": {
                 "query": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "page_number": {
                     "type": "integer"
@@ -22,6 +20,10 @@ const OptionRequiredField = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "query",
+                "page_number"
+            ],
             "title": "Option Required Field"
         }
     }

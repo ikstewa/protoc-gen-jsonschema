@@ -1,30 +1,32 @@
 package testdata
 
 const MessageKind11 = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/MessageKind11",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/MessageKind11",
+    "$defs": {
         "MessageKind11": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "ones": {
                     "items": {
-                        "$ref": "#/definitions/samples.MessageKind1"
+                        "$ref": "#/$defs/samples.MessageKind1"
                     },
                     "type": "array"
                 },
                 "kind2": {
-                    "$ref": "#/definitions/samples.MessageKind2",
+                    "$ref": "#/$defs/samples.MessageKind2",
                     "additionalProperties": true
                 },
                 "kind3": {
-                    "$ref": "#/definitions/samples.MessageKind3",
+                    "$ref": "#/$defs/samples.MessageKind3",
                     "additionalProperties": true
                 },
                 "kind4": {
-                    "$ref": "#/definitions/samples.MessageKind4",
+                    "$ref": "#/$defs/samples.MessageKind4",
                     "additionalProperties": true
                 }
             },
@@ -35,10 +37,14 @@ const MessageKind11 = `{
         "samples.MessageKind1": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -57,10 +63,14 @@ const MessageKind11 = `{
         "samples.MessageKind2": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -85,10 +95,14 @@ const MessageKind11 = `{
         "samples.MessageKind3": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -100,7 +114,9 @@ const MessageKind11 = `{
                     "type": "boolean"
                 },
                 "someProp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,
@@ -110,10 +126,14 @@ const MessageKind11 = `{
         "samples.MessageKind4": {
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "timestamp": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 },
                 "id": {
                     "type": "integer"
@@ -125,7 +145,9 @@ const MessageKind11 = `{
                     "type": "boolean"
                 },
                 "special": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 0,
+                    "minLength": 0
                 }
             },
             "additionalProperties": true,

@@ -1,9 +1,9 @@
 package testdata
 
 const GoogleInt64Value = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/GoogleInt64Value",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/GoogleInt64Value",
+    "$defs": {
         "GoogleInt64Value": {
             "properties": {
                 "big_number": {
