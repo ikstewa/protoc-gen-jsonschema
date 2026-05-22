@@ -212,8 +212,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		// Custom field options from protoc-gen-jsonschema:
 		if opt := proto.GetExtension(desc.GetOptions(), protoc_gen_jsonschema.E_FieldOptions); opt != nil {
 			if fieldOptions, ok := opt.(*protoc_gen_jsonschema.FieldOptions); ok {
-				stringDef.MinLength = int(fieldOptions.GetMinLength())
-				stringDef.MaxLength = int(fieldOptions.GetMaxLength())
+				stringDef.MinLength = ptrUint64(uint64(fieldOptions.GetMinLength()))
+				stringDef.MaxLength = ptrUint64(uint64(fieldOptions.GetMaxLength()))
 				stringDef.Pattern = fieldOptions.GetPattern()
 			}
 		}
@@ -222,8 +222,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		if opt := proto.GetExtension(desc.GetOptions(), protoc_gen_validate.E_Rules); opt != nil {
 			if fieldRules, ok := opt.(*protoc_gen_validate.FieldRules); fieldRules != nil && ok {
 				if stringRules := fieldRules.GetString_(); stringRules != nil {
-					stringDef.MaxLength = int(stringRules.GetMaxLen())
-					stringDef.MinLength = int(stringRules.GetMinLen())
+					stringDef.MaxLength = ptrUint64(uint64(stringRules.GetMaxLen()))
+					stringDef.MinLength = ptrUint64(uint64(stringRules.GetMinLen()))
 					stringDef.Pattern = stringRules.GetPattern()
 				}
 			}
@@ -331,8 +331,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 		if opt := proto.GetExtension(desc.GetOptions(), protoc_gen_validate.E_Rules); opt != nil {
 			if fieldRules, ok := opt.(*protoc_gen_validate.FieldRules); fieldRules != nil && ok {
 				if repeatedRules := fieldRules.GetRepeated(); repeatedRules != nil {
-					jsonSchemaType.MaxItems = int(repeatedRules.GetMaxItems())
-					jsonSchemaType.MinItems = int(repeatedRules.GetMinItems())
+					jsonSchemaType.MaxItems = ptrUint64(uint64(repeatedRules.GetMaxItems()))
+					jsonSchemaType.MinItems = ptrUint64(uint64(repeatedRules.GetMinItems()))
 				}
 			}
 		}
@@ -771,4 +771,10 @@ func dedupe(inputStrings []string) []string {
 		}
 	}
 	return outputStrings
+}
+
+// ptrUint64 returns a pointer to a uint64 with the given value, for use with
+// invopop/jsonschema fields like MaxLength / MaxItems which are typed *uint64.
+func ptrUint64(v uint64) *uint64 {
+	return &v
 }
