@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/invopop/jsonschema"
-	"github.com/iancoleman/orderedmap"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 	"github.com/xeipuuv/gojsonschema"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
@@ -408,8 +408,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 
 			// Build up the list of required fields:
 			if messageFlags.AllFieldsRequired && len(recursedJSONSchemaType.OneOf) == 0 && recursedJSONSchemaType.Properties != nil {
-				for _, property := range recursedJSONSchemaType.Properties.Keys() {
-					jsonSchemaType.Items.Required = append(jsonSchemaType.Items.Required, property)
+				for pair := recursedJSONSchemaType.Properties.Oldest(); pair != nil; pair = pair.Next() {
+					jsonSchemaType.Items.Required = append(jsonSchemaType.Items.Required, pair.Key)
 				}
 			}
 			jsonSchemaType.Items.Required = dedupe(jsonSchemaType.Items.Required)
@@ -434,8 +434,8 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 
 			// Build up the list of required fields:
 			if messageFlags.AllFieldsRequired && len(recursedJSONSchemaType.OneOf) == 0 && recursedJSONSchemaType.Properties != nil {
-				for _, property := range recursedJSONSchemaType.Properties.Keys() {
-					jsonSchemaType.Required = append(jsonSchemaType.Required, property)
+				for pair := recursedJSONSchemaType.Properties.Oldest(); pair != nil; pair = pair.Next() {
+					jsonSchemaType.Required = append(jsonSchemaType.Required, pair.Key)
 				}
 			}
 		}
@@ -485,10 +485,8 @@ func (c *Converter) convertMessageType(curPkg *ProtoPackage, msgDesc *descriptor
 
 	// Put together a JSON schema with our discovered definitions, and a $ref for the root type:
 	newJSONSchema := &jsonschema.Schema{
-		Type: &jsonschema.Schema{
-			Ref:     fmt.Sprintf("%s%s", c.refPrefix, msgDesc.GetName()),
-			Version: c.schemaVersion,
-		},
+		Ref:         fmt.Sprintf("%s%s", c.refPrefix, msgDesc.GetName()),
+		Version:     c.schemaVersion,
 		Definitions: definitions,
 	}
 
@@ -633,7 +631,7 @@ func (c *Converter) recursiveConvertMessageType(curPkg *ProtoPackage, msgDesc *d
 	}
 
 	// Set defaults:
-	jsonSchemaType.Properties = orderedmap.New()
+	jsonSchemaType.Properties = orderedmap.New[string, *jsonschema.Schema]()
 
 	// Look up references:
 	if nameWithPackage, ok := duplicatedMessages[msgDesc]; ok && !ignoreDuplicatedMessages {
@@ -750,7 +748,7 @@ func (c *Converter) recursiveConvertMessageType(curPkg *ProtoPackage, msgDesc *d
 	}
 
 	// Remove empty properties to keep the final output as clean as possible:
-	if len(jsonSchemaType.Properties.Keys()) == 0 {
+	if jsonSchemaType.Properties.Len() == 0 {
 		jsonSchemaType.Properties = nil
 	}
 
