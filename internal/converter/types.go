@@ -249,13 +249,13 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 				{
 					Type:           gojsonschema.TYPE_STRING,
 					Format:         "binary",
-					BinaryEncoding: "base64",
+					ContentEncoding: "base64",
 				},
 			}
 		} else {
 			jsonSchemaType.Type = gojsonschema.TYPE_STRING
 			jsonSchemaType.Format = "binary"
-			jsonSchemaType.BinaryEncoding = "base64"
+			jsonSchemaType.ContentEncoding = "base64"
 		}
 
 	// ENUM:
