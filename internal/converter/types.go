@@ -804,16 +804,18 @@ func ptrUint64(v uint64) *uint64 {
 	return &v
 }
 
-// schemaAllowAny is a JSON Schema Draft 2020-12 schema that matches any value.
-// Equivalent to the boolean schema `true`. Use for additionalProperties when
-// the converter wants to explicitly state "any additional properties allowed."
+// schemaAllowAny returns the canonical "matches anything" schema. invopop
+// exports a package-level singleton whose MarshalJSON emits literal `true`.
+// Use for additionalProperties when the converter wants to explicitly state
+// "any additional properties allowed."
 func schemaAllowAny() *jsonschema.Schema {
-	return &jsonschema.Schema{}
+	return jsonschema.TrueSchema
 }
 
-// schemaAllowNone is a JSON Schema Draft 2020-12 schema that matches no value.
-// Equivalent to the boolean schema `false`. Use for additionalProperties when
-// the converter wants to disallow any additional properties.
+// schemaAllowNone returns the canonical "matches nothing" schema. invopop
+// exports a package-level singleton whose MarshalJSON emits literal `false`.
+// Use for additionalProperties when the converter wants to disallow any
+// additional properties.
 func schemaAllowNone() *jsonschema.Schema {
-	return &jsonschema.Schema{Not: &jsonschema.Schema{}}
+	return jsonschema.FalseSchema
 }

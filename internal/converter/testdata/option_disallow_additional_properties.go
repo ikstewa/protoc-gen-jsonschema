@@ -22,9 +22,7 @@ const OptionDisallowAdditionalProperties = `{
                     "type": "boolean"
                 }
             },
-            "additionalProperties": {
-                "not": true
-            },
+            "additionalProperties": false,
             "type": "object",
             "title": "Option Disallow Additional Properties"
         }
