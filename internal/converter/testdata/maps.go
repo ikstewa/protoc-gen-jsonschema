@@ -1,9 +1,9 @@
 package testdata
 
 const Maps = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Maps",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Maps",
+    "$defs": {
         "Maps": {
             "properties": {
                 "map_of_strings": {
@@ -20,8 +20,7 @@ const Maps = `{
                 },
                 "map_of_messages": {
                     "additionalProperties": {
-                        "$ref": "#/definitions/samples.PayloadMessage",
-                        "additionalProperties": true
+                        "$ref": "#/$defs/samples.PayloadMessage"
                     },
                     "type": "object"
                 }
@@ -48,6 +47,14 @@ const Maps = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -61,14 +68,6 @@ const Maps = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

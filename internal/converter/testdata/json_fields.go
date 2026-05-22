@@ -1,13 +1,10 @@
 package testdata
 
 const JSONFields = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/JSONFields",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/JSONFields",
+    "$defs": {
         "JSONFields": {
-            "required": [
-                "otherNumb"
-            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -33,6 +30,9 @@ const JSONFields = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "otherNumb"
+            ],
             "title": "JSON Fields"
         }
     }

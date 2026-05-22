@@ -1,10 +1,18 @@
 package testdata
 
 const ArrayOfPrimitives = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ArrayOfPrimitives",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ArrayOfPrimitives",
+    "$defs": {
         "ArrayOfPrimitives": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object"
+                }
+            ],
             "properties": {
                 "description": {
                     "oneOf": [
@@ -17,6 +25,14 @@ const ArrayOfPrimitives = `{
                     ]
                 },
                 "luckyNumbers": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -26,17 +42,17 @@ const ArrayOfPrimitives = `{
                                 "type": "integer"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "luckyBigNumbers": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -46,17 +62,17 @@ const ArrayOfPrimitives = `{
                                 "type": "null"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "keyWords": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -66,15 +82,7 @@ const ArrayOfPrimitives = `{
                                 "type": "string"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "big_number": {
                     "oneOf": [
@@ -88,14 +96,6 @@ const ArrayOfPrimitives = `{
                 }
             },
             "additionalProperties": true,
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object"
-                }
-            ],
             "title": "Array Of Primitives"
         }
     }
@@ -106,10 +106,18 @@ const ArrayOfPrimitivesFail = `{"luckyNumbers": ["false"]}`
 const ArrayOfPrimitivesPass = `{"luckyNumbers": [1,2,3]}`
 
 const ArrayOfPrimitivesDouble = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ArrayOfPrimitives",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ArrayOfPrimitives",
+    "$defs": {
         "ArrayOfPrimitives": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object"
+                }
+            ],
             "properties": {
                 "description": {
                     "oneOf": [
@@ -122,6 +130,14 @@ const ArrayOfPrimitivesDouble = `{
                     ]
                 },
                 "luckyNumbers": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -131,17 +147,17 @@ const ArrayOfPrimitivesDouble = `{
                                 "type": "integer"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "luckyBigNumbers": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -151,17 +167,17 @@ const ArrayOfPrimitivesDouble = `{
                                 "type": "null"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "keyWords": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ],
                     "items": {
                         "oneOf": [
                             {
@@ -171,15 +187,7 @@ const ArrayOfPrimitivesDouble = `{
                                 "type": "string"
                             }
                         ]
-                    },
-                    "oneOf": [
-                        {
-                            "type": "null"
-                        },
-                        {
-                            "type": "array"
-                        }
-                    ]
+                    }
                 },
                 "big_number": {
                     "oneOf": [
@@ -203,14 +211,6 @@ const ArrayOfPrimitivesDouble = `{
                 }
             },
             "additionalProperties": true,
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object"
-                }
-            ],
             "title": "Array Of Primitives"
         }
     }

@@ -1,14 +1,14 @@
 package testdata
 
 const OptionEnumsAsStringsOnly = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "string",
     "enum": [
         "NOT_SPECIFIED",
         "USD",
         "GBP",
         "EUR"
     ],
-    "type": "string",
     "title": "Currency"
 }`
 

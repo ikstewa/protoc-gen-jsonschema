@@ -1,18 +1,10 @@
 package testdata
 
 const PayloadMessage2 = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/PayloadMessage2",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/PayloadMessage2",
+    "$defs": {
         "PayloadMessage2": {
-            "required": [
-                "name",
-                "timestamp",
-                "id",
-                "rating",
-                "complete",
-                "topology"
-            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -30,6 +22,14 @@ const PayloadMessage2 = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -43,14 +43,6 @@ const PayloadMessage2 = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 },
@@ -66,6 +58,14 @@ const PayloadMessage2 = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "name",
+                "timestamp",
+                "id",
+                "rating",
+                "complete",
+                "topology"
+            ],
             "title": "Payload Message 2",
             "description": "PayloadMessage2 contains some common types  PayloadMessage2 is used throughout the test suite and can have multi-line comments"
         }

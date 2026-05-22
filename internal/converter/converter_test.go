@@ -2,15 +2,22 @@ package converter
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/xeipuuv/gojsonschema"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	plugin "google.golang.org/protobuf/types/pluginpb"
@@ -83,8 +90,20 @@ func testConvertSampleProto(t *testing.T, sampleProto sampleProto) {
 	} else {
 		for responseFileIndex, responseFile := range response.File {
 
+			expected := strings.TrimSpace(sampleProto.ExpectedJSONSchema[responseFileIndex])
+			actual := responseFile.GetContent()
+
+			// UPDATE_GOLDENS=1 rewrites the matching testdata const in place
+			// instead of asserting. See updateGoldenForExpected for details.
+			if os.Getenv("UPDATE_GOLDENS") == "1" {
+				if err := updateGoldenForExpected(t, expected, actual); err != nil {
+					t.Fatalf("UPDATE_GOLDENS: %v (proto=%v idx=%d)", err, sampleProtoFileName, responseFileIndex)
+				}
+				continue
+			}
+
 			// Ensure that the generated schema matches the expected (canned) one:
-			assert.Equal(t, strings.TrimSpace(sampleProto.ExpectedJSONSchema[responseFileIndex]), responseFile.GetContent(), "Incorrect JSON-Schema returned for sample proto file (%v)", sampleProtoFileName)
+			assert.Equal(t, expected, actual, "Incorrect JSON-Schema returned for sample proto file (%v)", sampleProtoFileName)
 
 			// Validate the generated filenames:
 			if len(sampleProto.ExpectedFileNames) > 0 {
@@ -557,20 +576,243 @@ func mustReadProtoFiles(t *testing.T, includePath string, filenames ...string) *
 	return fds
 }
 
+// validateSchema validates a JSON document against a JSON Schema string.
+// Uses github.com/santhosh-tekuri/jsonschema/v6 which supports JSON Schema
+// Draft 2020-12 (the default emitted by invopop/jsonschema). The previous
+// implementation used github.com/xeipuuv/gojsonschema, which is capped at
+// Draft 7 and cannot parse 2020-12 keywords like $defs.
 func validateSchema(jsonSchema, jsonData string) (bool, error) {
-	var valid = false
-
-	// Load the JSON schema:
-	schemaLoader := gojsonschema.NewStringLoader(jsonSchema)
-
-	// Load the JSON document we'll be validating:
-	documentLoader := gojsonschema.NewStringLoader(jsonData)
-
-	// Validate:
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil || result == nil {
-		return valid, err
+	// Parse the schema document into an `any` tree (the form AddResource expects):
+	var schemaDoc any
+	if err := json.Unmarshal([]byte(jsonSchema), &schemaDoc); err != nil {
+		return false, fmt.Errorf("validateSchema: failed to parse schema JSON: %w", err)
 	}
 
-	return result.Valid(), nil
+	compiler := jsonschema.NewCompiler()
+	// gojsonschema enforced `format` by default; santhosh-tekuri follows the
+	// 2020-12 spec where format is annotation-only unless explicitly asserted.
+	// The test goldens depend on format-as-assertion (e.g. TimestampFail
+	// expects "twelve oclock" to be rejected as not date-time), so enable it.
+	compiler.AssertFormat()
+	if err := compiler.AddResource("schema.json", schemaDoc); err != nil {
+		return false, fmt.Errorf("validateSchema: AddResource failed: %w", err)
+	}
+	sch, err := compiler.Compile("schema.json")
+	if err != nil {
+		return false, fmt.Errorf("validateSchema: Compile failed: %w", err)
+	}
+
+	// Parse the instance document:
+	var instance any
+	if err := json.Unmarshal([]byte(jsonData), &instance); err != nil {
+		return false, fmt.Errorf("validateSchema: failed to parse instance JSON: %w", err)
+	}
+
+	if err := sch.Validate(instance); err != nil {
+		// Validation failed (schema is well-formed but instance doesn't match).
+		// Match the gojsonschema contract: return (false, nil) for instance
+		// non-conformance rather than (_, err).
+		return false, nil
+	}
+	return true, nil
+}
+
+// ---------------------------------------------------------------------------
+// UPDATE_GOLDENS support
+// ---------------------------------------------------------------------------
+//
+// When the env var UPDATE_GOLDENS=1 is set, the test harness rewrites the
+// matching testdata const in place instead of asserting equality. Because
+// the test feeds canned expected JSON via the `testdata.<Name>` constants
+// (and ExpectedJSONSchema is just a []string), we recover the source const
+// name by content-matching against an index built from every *.go file in
+// testdata/. This sidesteps having to thread const names through the
+// sampleProto table.
+
+type goldenLocation struct {
+	filePath  string
+	constName string
+}
+
+var (
+	goldenIndexOnce sync.Once
+	goldenIndex     map[string]goldenLocation // key = strings.TrimSpace(constBody)
+	goldenIndexErr  error
+)
+
+// loadGoldenIndex parses each testdata/*.go via Go's AST and indexes every
+// top-level string const by its (trimmed) string value. The AST is necessary
+// here because some golden consts include literal backticks (e.g. protoc-
+// emitted descriptions referencing Go-style `int64`) which can't be encoded
+// as raw-string literals — those declarations use concatenation form like
+// `parta` + "`" + `partb`, which a naive regex would mis-parse.
+func loadGoldenIndex() (map[string]goldenLocation, error) {
+	goldenIndexOnce.Do(func() {
+		idx := map[string]goldenLocation{}
+		entries, err := os.ReadDir("testdata")
+		if err != nil {
+			goldenIndexErr = fmt.Errorf("reading testdata dir: %w", err)
+			return
+		}
+		for _, e := range entries {
+			if e.IsDir() || !strings.HasSuffix(e.Name(), ".go") {
+				continue
+			}
+			path := filepath.Join("testdata", e.Name())
+			fset := token.NewFileSet()
+			file, err := parser.ParseFile(fset, path, nil, 0)
+			if err != nil {
+				goldenIndexErr = fmt.Errorf("parsing %s: %w", path, err)
+				return
+			}
+			for _, decl := range file.Decls {
+				gen, ok := decl.(*ast.GenDecl)
+				if !ok || gen.Tok != token.CONST {
+					continue
+				}
+				for _, spec := range gen.Specs {
+					vs, ok := spec.(*ast.ValueSpec)
+					if !ok {
+						continue
+					}
+					for i, name := range vs.Names {
+						if i >= len(vs.Values) {
+							continue
+						}
+						val, ok := evalConstString(vs.Values[i])
+						if !ok {
+							continue
+						}
+						key := strings.TrimSpace(val)
+						idx[key] = goldenLocation{filePath: path, constName: name.Name}
+					}
+				}
+			}
+		}
+		goldenIndex = idx
+	})
+	return goldenIndex, goldenIndexErr
+}
+
+// updateGoldenForExpected looks up the const whose current value matches
+// `expected` and rewrites its body to `actual` in the corresponding
+// testdata/*.go file. Uses AST byte offsets to find and replace just the
+// targeted const's value expression — preserves sibling consts (e.g.
+// <Name>Fail / <Name>Pass) in the same file and works even when the
+// existing value expression is a concatenation of raw and double-quoted
+// segments (as required for goldens that contain literal backticks).
+func updateGoldenForExpected(t *testing.T, expected, actual string) error {
+	t.Helper()
+
+	idx, err := loadGoldenIndex()
+	if err != nil {
+		return err
+	}
+	loc, ok := idx[expected]
+	if !ok {
+		return fmt.Errorf("no testdata const matched the expected JSON (len=%d); add the const first or check for drift", len(expected))
+	}
+
+	src, err := os.ReadFile(loc.filePath)
+	if err != nil {
+		return fmt.Errorf("reading %s: %w", loc.filePath, err)
+	}
+
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, loc.filePath, src, 0)
+	if err != nil {
+		return fmt.Errorf("parsing %s: %w", loc.filePath, err)
+	}
+
+	var valueExpr ast.Expr
+	for _, decl := range file.Decls {
+		gen, ok := decl.(*ast.GenDecl)
+		if !ok || gen.Tok != token.CONST {
+			continue
+		}
+		for _, spec := range gen.Specs {
+			vs, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+			for i, name := range vs.Names {
+				if name.Name == loc.constName && i < len(vs.Values) {
+					valueExpr = vs.Values[i]
+				}
+			}
+		}
+	}
+	if valueExpr == nil {
+		return fmt.Errorf("AST: const %s not found in %s", loc.constName, loc.filePath)
+	}
+
+	startOffset := fset.Position(valueExpr.Pos()).Offset
+	endOffset := fset.Position(valueExpr.End()).Offset
+
+	literal := goldenLiteral(actual)
+
+	var out bytes.Buffer
+	out.Write(src[:startOffset])
+	out.WriteString(literal)
+	out.Write(src[endOffset:])
+
+	if bytes.Equal(out.Bytes(), src) {
+		return nil
+	}
+	if err := os.WriteFile(loc.filePath, out.Bytes(), 0644); err != nil {
+		return fmt.Errorf("writing %s: %w", loc.filePath, err)
+	}
+
+	t.Logf("UPDATE_GOLDENS: rewrote const %s in %s", loc.constName, loc.filePath)
+	return nil
+}
+
+// goldenLiteral encodes `s` as a Go string expression suitable for writing
+// into a `const X = ...` declaration. Uses a raw-string literal for the
+// common case; falls back to concatenation of raw-string and double-quoted
+// segments when `s` contains a backtick (which can't appear inside a
+// raw-string). The concatenation form looks like:
+//
+//	`parta` + "`" + `partb`
+//
+// preserving multi-line JSON readability for the common case.
+func goldenLiteral(s string) string {
+	if !strings.ContainsRune(s, '`') {
+		return "`" + s + "`"
+	}
+	parts := strings.Split(s, "`")
+	sep := "` + \"`\" + `"
+	return "`" + strings.Join(parts, sep) + "`"
+}
+
+// evalConstString evaluates a Go AST expression and returns its string value
+// if the expression is a string literal (raw or double-quoted) or a string
+// concatenation of such literals (e.g. `a` + "`" + `b`). Returns (s, true)
+// on success; (_, false) when the expression isn't a constant string.
+func evalConstString(expr ast.Expr) (string, bool) {
+	switch e := expr.(type) {
+	case *ast.BasicLit:
+		if e.Kind != token.STRING {
+			return "", false
+		}
+		s, err := strconv.Unquote(e.Value)
+		if err != nil {
+			return "", false
+		}
+		return s, true
+	case *ast.BinaryExpr:
+		if e.Op != token.ADD {
+			return "", false
+		}
+		lhs, lok := evalConstString(e.X)
+		if !lok {
+			return "", false
+		}
+		rhs, rok := evalConstString(e.Y)
+		if !rok {
+			return "", false
+		}
+		return lhs + rhs, true
+	}
+	return "", false
 }

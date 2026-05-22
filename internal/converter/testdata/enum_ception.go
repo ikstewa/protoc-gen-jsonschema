@@ -2,8 +2,8 @@ package testdata
 
 const EnumCeption = `{
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$ref": "#/definitions/Enumception",
-    "definitions": {
+    "$ref": "#/$defs/Enumception",
+    "$defs": {
         "Enumception": {
             "properties": {
                 "name": {
@@ -22,12 +22,6 @@ const EnumCeption = `{
                     "type": "boolean"
                 },
                 "failureMode": {
-                    "enum": [
-                        "RECURSION_ERROR",
-                        0,
-                        "SYNTAX_ERROR",
-                        1
-                    ],
                     "oneOf": [
                         {
                             "type": "string"
@@ -36,20 +30,59 @@ const EnumCeption = `{
                             "type": "integer"
                         }
                     ],
+                    "enum": [
+                        "RECURSION_ERROR",
+                        0,
+                        "SYNTAX_ERROR",
+                        1
+                    ],
                     "title": "Failure Modes",
                     "description": "FailureModes enum"
                 },
                 "payload": {
-                    "$ref": "#/definitions/samples.PayloadMessage",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.PayloadMessage"
                 },
                 "payloads": {
                     "items": {
-                        "$ref": "#/definitions/samples.PayloadMessage"
+                        "$ref": "#/$defs/samples.PayloadMessage"
                     },
                     "type": "array"
                 },
                 "importedEnum": {
+                    "oneOf": [
+                        {
+                            "const": "VALUE_0",
+                            "description": "Zero"
+                        },
+                        {
+                            "const": 0,
+                            "description": "Zero"
+                        },
+                        {
+                            "const": "VALUE_1",
+                            "description": "One"
+                        },
+                        {
+                            "const": 1,
+                            "description": "One"
+                        },
+                        {
+                            "const": "VALUE_2",
+                            "description": "Two"
+                        },
+                        {
+                            "const": 2,
+                            "description": "Two"
+                        },
+                        {
+                            "const": "VALUE_3",
+                            "description": "Three"
+                        },
+                        {
+                            "const": 3,
+                            "description": "Three"
+                        }
+                    ],
                     "enum": [
                         "VALUE_0",
                         0,
@@ -59,40 +92,6 @@ const EnumCeption = `{
                         2,
                         "VALUE_3",
                         3
-                    ],
-                    "oneOf": [
-                        {
-                            "description": "Zero",
-                            "const": "VALUE_0"
-                        },
-                        {
-                            "description": "Zero",
-                            "const": 0
-                        },
-                        {
-                            "description": "One",
-                            "const": "VALUE_1"
-                        },
-                        {
-                            "description": "One",
-                            "const": 1
-                        },
-                        {
-                            "description": "Two",
-                            "const": "VALUE_2"
-                        },
-                        {
-                            "description": "Two",
-                            "const": 2
-                        },
-                        {
-                            "description": "Three",
-                            "const": "VALUE_3"
-                        },
-                        {
-                            "description": "Three",
-                            "const": 3
-                        }
                     ],
                     "title": "Imported Enum",
                     "description": "This is an enum"
@@ -120,6 +119,14 @@ const EnumCeption = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -133,14 +140,6 @@ const EnumCeption = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

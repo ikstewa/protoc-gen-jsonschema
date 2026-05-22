@@ -1,9 +1,9 @@
 package testdata
 
 const TypeNamesWithNoPackage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ArrayOfMessages",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ArrayOfMessages",
+    "$defs": {
         "ArrayOfMessages": {
             "properties": {
                 "description": {
@@ -11,7 +11,7 @@ const TypeNamesWithNoPackage = `{
                 },
                 "payload": {
                     "items": {
-                        "$ref": "#/definitions/PayloadMessage"
+                        "$ref": "#/$defs/PayloadMessage"
                     },
                     "type": "array"
                 }
@@ -38,6 +38,14 @@ const TypeNamesWithNoPackage = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -51,14 +59,6 @@ const TypeNamesWithNoPackage = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

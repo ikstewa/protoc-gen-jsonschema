@@ -1,18 +1,13 @@
 package testdata
 
 const Proto2NestedObject = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Proto2NestedObject",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Proto2NestedObject",
+    "$defs": {
         "Proto2NestedObject": {
-            "required": [
-                "payload",
-                "description"
-            ],
             "properties": {
                 "payload": {
-                    "$ref": "#/definitions/samples.Proto2NestedObject.NestedPayload",
-                    "additionalProperties": false
+                    "$ref": "#/$defs/samples.Proto2NestedObject.NestedPayload"
                 },
                 "description": {
                     "type": "string"
@@ -20,17 +15,13 @@ const Proto2NestedObject = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "payload",
+                "description"
+            ],
             "title": "Proto 2 Nested Object"
         },
         "samples.Proto2NestedObject.NestedPayload": {
-            "required": [
-                "name",
-                "timestamp",
-                "id",
-                "rating",
-                "complete",
-                "topology"
-            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -48,6 +39,14 @@ const Proto2NestedObject = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -62,19 +61,19 @@ const Proto2NestedObject = `{
                         "ARRAY_OF_MESSAGE",
                         5
                     ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
-                    ],
                     "title": "Topology"
                 }
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "name",
+                "timestamp",
+                "id",
+                "rating",
+                "complete",
+                "topology"
+            ],
             "title": "Nested Payload"
         }
     }

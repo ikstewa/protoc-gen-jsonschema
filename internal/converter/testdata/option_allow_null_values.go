@@ -1,10 +1,18 @@
 package testdata
 
 const OptionAllowNullValues = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionAllowNullValues",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionAllowNullValues",
+    "$defs": {
         "OptionAllowNullValues": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object"
+                }
+            ],
             "properties": {
                 "name2": {
                     "oneOf": [
@@ -38,14 +46,6 @@ const OptionAllowNullValues = `{
                 }
             },
             "additionalProperties": true,
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object"
-                }
-            ],
             "title": "Option Allow Null Values"
         }
     }

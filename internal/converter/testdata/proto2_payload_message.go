@@ -1,14 +1,10 @@
 package testdata
 
 const Proto2PayloadMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Proto2PayloadMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Proto2PayloadMessage",
+    "$defs": {
         "Proto2PayloadMessage": {
-            "required": [
-                "name",
-                "id"
-            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -26,6 +22,14 @@ const Proto2PayloadMessage = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -40,19 +44,15 @@ const Proto2PayloadMessage = `{
                         "ARRAY_OF_MESSAGE",
                         5
                     ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
-                    ],
                     "title": "Topology"
                 }
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "name",
+                "id"
+            ],
             "title": "Proto 2 Payload Message"
         }
     }

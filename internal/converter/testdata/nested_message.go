@@ -1,14 +1,13 @@
 package testdata
 
 const NestedMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/NestedMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/NestedMessage",
+    "$defs": {
         "NestedMessage": {
             "properties": {
                 "payload": {
-                    "$ref": "#/definitions/samples.PayloadMessage",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.PayloadMessage"
                 },
                 "description": {
                     "type": "string"
@@ -36,6 +35,14 @@ const NestedMessage = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -49,14 +56,6 @@ const NestedMessage = `{
                         4,
                         "ARRAY_OF_MESSAGE",
                         5
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
                     ],
                     "title": "Topology"
                 }

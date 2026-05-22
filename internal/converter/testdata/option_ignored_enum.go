@@ -1,7 +1,15 @@
 package testdata
 
 const UnignoredEnum = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "oneOf": [
+        {
+            "type": "string"
+        },
+        {
+            "type": "integer"
+        }
+    ],
     "enum": [
         "VALUE_4",
         0,
@@ -11,14 +19,6 @@ const UnignoredEnum = `{
         2,
         "VALUE_7",
         3
-    ],
-    "oneOf": [
-        {
-            "type": "string"
-        },
-        {
-            "type": "integer"
-        }
     ],
     "title": "Unignored Enum"
 }`

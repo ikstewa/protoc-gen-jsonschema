@@ -1,9 +1,9 @@
 package testdata
 
 const MessageWithComments = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/MessageWithComments",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/MessageWithComments",
+    "$defs": {
         "MessageWithComments": {
             "properties": {
                 "name1": {

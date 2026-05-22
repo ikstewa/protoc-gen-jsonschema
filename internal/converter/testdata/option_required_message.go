@@ -1,17 +1,10 @@
 package testdata
 
 const OptionRequiredMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionRequiredMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionRequiredMessage",
+    "$defs": {
         "OptionRequiredMessage": {
-            "required": [
-                "name2",
-                "timestamp2",
-                "id2",
-                "rating2",
-                "complete2"
-            ],
             "properties": {
                 "name2": {
                     "type": "string"
@@ -31,6 +24,13 @@ const OptionRequiredMessage = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "name2",
+                "timestamp2",
+                "id2",
+                "rating2",
+                "complete2"
+            ],
             "title": "Option Required Message"
         }
     }

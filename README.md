@@ -7,6 +7,11 @@ Useful for people who define their data using ProtoBuf, but use JSON for the "wi
 
 "Heavily influenced" by [Google's protobuf-to-BigQuery-schema compiler](https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema).
 
+Schema library
+--------------
+
+As of `v0.1.0` this fork uses [`invopop/jsonschema`](https://github.com/invopop/jsonschema) as its schema model (migrated from the archived `alecthomas/jsonschema`). Output schemas conform to [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12/schema), with `$ref` paths under `#/$defs/` (replacing the Draft-04 `#/definitions/` convention). The test harness uses [`santhosh-tekuri/jsonschema/v6`](https://github.com/santhosh-tekuri/jsonschema) for Draft 2020-12 validation.
+
 
 Generated Schemas
 -----------------

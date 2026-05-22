@@ -1,9 +1,9 @@
 package testdata
 
 const OptionDisallowAdditionalProperties = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OptionDisallowAdditionalProperties",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OptionDisallowAdditionalProperties",
+    "$defs": {
         "OptionDisallowAdditionalProperties": {
             "properties": {
                 "name2": {

@@ -1,9 +1,9 @@
 package testdata
 
 const NumericFormat = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/NumericFormat",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/NumericFormat",
+    "$defs": {
         "NumericFormat": {
             "properties": {
                 "int_val": {

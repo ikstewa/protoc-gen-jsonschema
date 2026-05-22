@@ -1,10 +1,18 @@
 package testdata
 
 const ArrayOfObjects = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ArrayOfObjects",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ArrayOfObjects",
+    "$defs": {
         "ArrayOfObjects": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object"
+                }
+            ],
             "properties": {
                 "description": {
                     "oneOf": [
@@ -23,7 +31,7 @@ const ArrayOfObjects = `{
                         },
                         {
                             "items": {
-                                "$ref": "#/definitions/samples.ArrayOfObjects.RepeatedPayload"
+                                "$ref": "#/$defs/samples.ArrayOfObjects.RepeatedPayload"
                             },
                             "type": "array"
                         }
@@ -31,6 +39,9 @@ const ArrayOfObjects = `{
                 }
             },
             "additionalProperties": true,
+            "title": "Array Of Objects"
+        },
+        "samples.ArrayOfObjects.RepeatedPayload": {
             "oneOf": [
                 {
                     "type": "null"
@@ -39,9 +50,6 @@ const ArrayOfObjects = `{
                     "type": "object"
                 }
             ],
-            "title": "Array Of Objects"
-        },
-        "samples.ArrayOfObjects.RepeatedPayload": {
             "properties": {
                 "name": {
                     "oneOf": [
@@ -94,6 +102,17 @@ const ArrayOfObjects = `{
                     ]
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -108,29 +127,10 @@ const ArrayOfObjects = `{
                         "ARRAY_OF_MESSAGE",
                         5
                     ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ],
                     "title": "Topology"
                 }
             },
             "additionalProperties": true,
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object"
-                }
-            ],
             "title": "Repeated Payload"
         }
     }

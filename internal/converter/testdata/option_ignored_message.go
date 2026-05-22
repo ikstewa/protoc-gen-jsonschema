@@ -1,9 +1,9 @@
 package testdata
 
 const UnignoredMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/UnignoredMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/UnignoredMessage",
+    "$defs": {
         "UnignoredMessage": {
             "properties": {
                 "name2": {

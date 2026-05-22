@@ -1,28 +1,10 @@
 package testdata
 
 const OneOf = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/OneOf",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/OneOf",
+    "$defs": {
         "OneOf": {
-            "required": [
-                "something"
-            ],
-            "properties": {
-                "bar": {
-                    "$ref": "#/definitions/samples.OneOf.Bar",
-                    "additionalProperties": true
-                },
-                "baz": {
-                    "$ref": "#/definitions/samples.OneOf.Baz",
-                    "additionalProperties": true
-                },
-                "something": {
-                    "type": "boolean"
-                }
-            },
-            "additionalProperties": true,
-            "type": "object",
             "allOf": [
                 {
                     "oneOf": [
@@ -55,12 +37,25 @@ const OneOf = `{
                     ]
                 }
             ],
+            "properties": {
+                "bar": {
+                    "$ref": "#/$defs/samples.OneOf.Bar"
+                },
+                "baz": {
+                    "$ref": "#/$defs/samples.OneOf.Baz"
+                },
+                "something": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "required": [
+                "something"
+            ],
             "title": "One Of"
         },
         "samples.OneOf.Bar": {
-            "required": [
-                "foo"
-            ],
             "properties": {
                 "foo": {
                     "type": "integer"
@@ -68,12 +63,12 @@ const OneOf = `{
             },
             "additionalProperties": true,
             "type": "object",
-            "title": "Bar"
-        },
-        "samples.OneOf.Baz": {
             "required": [
                 "foo"
             ],
+            "title": "Bar"
+        },
+        "samples.OneOf.Baz": {
             "properties": {
                 "foo": {
                     "type": "string"
@@ -81,6 +76,9 @@ const OneOf = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "foo"
+            ],
             "title": "Baz"
         }
     }

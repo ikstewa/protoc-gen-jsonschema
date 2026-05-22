@@ -1,14 +1,13 @@
 package testdata
 
 const CyclicalReferenceMessageM = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/M",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/M",
+    "$defs": {
         "M": {
             "properties": {
                 "foo": {
-                    "$ref": "#/definitions/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -21,8 +20,7 @@ const CyclicalReferenceMessageM = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/definitions/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -35,8 +33,7 @@ const CyclicalReferenceMessageM = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/definitions/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -50,7 +47,7 @@ const CyclicalReferenceMessageM = `{
                 },
                 "bar": {
                     "items": {
-                        "$ref": "#/definitions/samples.Bar"
+                        "$ref": "#/$defs/samples.Bar"
                     },
                     "type": "array"
                 }
@@ -63,9 +60,9 @@ const CyclicalReferenceMessageM = `{
 }`
 
 const CyclicalReferenceMessageFoo = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Foo",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Foo",
+    "$defs": {
         "Foo": {
             "properties": {
                 "name": {
@@ -73,7 +70,7 @@ const CyclicalReferenceMessageFoo = `{
                 },
                 "bar": {
                     "items": {
-                        "$ref": "#/definitions/samples.Bar"
+                        "$ref": "#/$defs/samples.Bar"
                     },
                     "type": "array"
                 }
@@ -88,8 +85,7 @@ const CyclicalReferenceMessageFoo = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/definitions/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -102,8 +98,7 @@ const CyclicalReferenceMessageFoo = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/definitions/Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/Foo"
                 }
             },
             "additionalProperties": true,
@@ -114,17 +109,16 @@ const CyclicalReferenceMessageFoo = `{
 }`
 
 const CyclicalReferenceMessageBar = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Bar",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Bar",
+    "$defs": {
         "Bar": {
             "properties": {
                 "id": {
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/definitions/samples.Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Baz"
                 }
             },
             "additionalProperties": true,
@@ -137,8 +131,7 @@ const CyclicalReferenceMessageBar = `{
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/definitions/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -152,7 +145,7 @@ const CyclicalReferenceMessageBar = `{
                 },
                 "bar": {
                     "items": {
-                        "$ref": "#/definitions/Bar"
+                        "$ref": "#/$defs/Bar"
                     },
                     "type": "array"
                 }
@@ -165,17 +158,16 @@ const CyclicalReferenceMessageBar = `{
 }`
 
 const CyclicalReferenceMessageBaz = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Baz",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Baz",
+    "$defs": {
         "Baz": {
             "properties": {
                 "enabled": {
                     "type": "boolean"
                 },
                 "foo": {
-                    "$ref": "#/definitions/samples.Foo",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/samples.Foo"
                 }
             },
             "additionalProperties": true,
@@ -188,8 +180,7 @@ const CyclicalReferenceMessageBaz = `{
                     "type": "integer"
                 },
                 "baz": {
-                    "$ref": "#/definitions/Baz",
-                    "additionalProperties": true
+                    "$ref": "#/$defs/Baz"
                 }
             },
             "additionalProperties": true,
@@ -203,7 +194,7 @@ const CyclicalReferenceMessageBaz = `{
                 },
                 "bar": {
                     "items": {
-                        "$ref": "#/definitions/samples.Bar"
+                        "$ref": "#/$defs/samples.Bar"
                     },
                     "type": "array"
                 }

@@ -1,9 +1,9 @@
 package testdata
 
 const WellKnown = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/WellKnown",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/WellKnown",
+    "$defs": {
         "WellKnown": {
             "properties": {
                 "string_value": {
@@ -27,15 +27,15 @@ const WellKnown = `{
                     "items": {
                         "type": "integer",
                         "title": "Int 32 Value",
-                        "description": "Wrapper message for ` + "`int32`" + `. The JSON representation for ` + "`Int32Value`" + ` is JSON number."
+                        "description": "Wrapper message for ` + "`" + `int32` + "`" + `. The JSON representation for ` + "`" + `Int32Value` + "`" + ` is JSON number. Not recommended for use in new APIs, but still useful for legacy APIs and has no plan to be removed."
                     },
                     "type": "array"
                 },
                 "duration": {
-                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
                     "type": "string",
-                    "description": "This is a duration:",
-                    "format": "regex"
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "format": "regex",
+                    "description": "This is a duration:"
                 },
                 "struct": {
                     "additionalProperties": true,

@@ -1,17 +1,13 @@
 package testdata
 
 const Proto2NestedMessage = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/Proto2NestedMessage",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Proto2NestedMessage",
+    "$defs": {
         "Proto2NestedMessage": {
-            "required": [
-                "payload"
-            ],
             "properties": {
                 "payload": {
-                    "$ref": "#/definitions/samples.Proto2PayloadMessage",
-                    "additionalProperties": false
+                    "$ref": "#/$defs/samples.Proto2PayloadMessage"
                 },
                 "description": {
                     "type": "string"
@@ -19,13 +15,12 @@ const Proto2NestedMessage = `{
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "payload"
+            ],
             "title": "Proto 2 Nested Message"
         },
         "samples.Proto2PayloadMessage": {
-            "required": [
-                "name",
-                "id"
-            ],
             "properties": {
                 "name": {
                     "type": "string"
@@ -43,6 +38,14 @@ const Proto2NestedMessage = `{
                     "type": "boolean"
                 },
                 "topology": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
                     "enum": [
                         "FLAT",
                         0,
@@ -57,19 +60,15 @@ const Proto2NestedMessage = `{
                         "ARRAY_OF_MESSAGE",
                         5
                     ],
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "integer"
-                        }
-                    ],
                     "title": "Topology"
                 }
             },
             "additionalProperties": true,
             "type": "object",
+            "required": [
+                "name",
+                "id"
+            ],
             "title": "Proto 2 Payload Message"
         }
     }
