@@ -26,8 +26,9 @@ const (
 	defaultExcludeCommentToken = "@exclude"
 	defaultFileExtension       = "json"
 	defaultPackageName         = "package"
-	defaultRefPrefix           = "#/definitions/"
+	defaultRefPrefix           = "#/$defs/"
 	messageDelimiter           = "+"
+	versionDraft202012         = "https://json-schema.org/draft/2020-12/schema"
 	versionDraft04             = "http://json-schema.org/draft-04/schema#"
 	versionDraft06             = "http://json-schema.org/draft-06/schema#"
 )
@@ -71,7 +72,7 @@ func New(logger *logrus.Logger) *Converter {
 		logger:              logger,
 		refPrefix:           defaultRefPrefix,
 		schemaFileExtension: defaultFileExtension,
-		schemaVersion:       versionDraft04,
+		schemaVersion:       versionDraft202012,
 	}
 }
 
