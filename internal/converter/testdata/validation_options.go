@@ -1,23 +1,23 @@
 package testdata
 
 const ValidationOptions = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/ValidationOptions",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ValidationOptions",
+    "$defs": {
         "ValidationOptions": {
             "properties": {
                 "stringWithLengthConstraints": {
+                    "type": "string",
                     "maxLength": 10,
-                    "minLength": 5,
-                    "type": "string"
+                    "minLength": 5
                 },
                 "luckyNumbersWithArrayConstraints": {
                     "items": {
                         "type": "integer"
                     },
+                    "type": "array",
                     "maxItems": 6,
-                    "minItems": 2,
-                    "type": "array"
+                    "minItems": 2
                 }
             },
             "additionalProperties": true,

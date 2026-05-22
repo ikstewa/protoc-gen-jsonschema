@@ -1,9 +1,9 @@
 package testdata
 
 const GoogleValue = `{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$ref": "#/definitions/GoogleValue",
-    "definitions": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/GoogleValue",
+    "$defs": {
         "GoogleValue": {
             "properties": {
                 "arg": {
@@ -25,7 +25,7 @@ const GoogleValue = `{
                         }
                     ],
                     "title": "Value",
-                    "description": "` + "`Value`" + ` represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values. A producer of value is expected to set one of these variants. Absence of any variant indicates an error. The JSON representation for ` + "`Value`" + ` is JSON value."
+                    "description": "` + "`" + `Value` + "`" + ` represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values. A producer of value is expected to set one of these variants. Absence of any variant indicates an error. The JSON representation for ` + "`" + `Value` + "`" + ` is JSON value."
                 },
                 "some_list": {
                     "additionalProperties": false,
@@ -41,8 +41,7 @@ const GoogleValue = `{
             "title": "Google Value"
         }
     }
-}
-`
+}`
 
 const GoogleValueFail = `{"arg": null, "some_list": 4}`
 

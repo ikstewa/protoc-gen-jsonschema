@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -637,11 +640,12 @@ var (
 	goldenIndexErr  error
 )
 
-// goldenConstRE captures a top-level `const <Name> = ` + "`" + `<body>` + "`" + ` definition
-// in a testdata file. We rely on the convention that every golden const uses
-// raw-string (backtick) literals, which the existing files do.
-var goldenConstRE = regexp.MustCompile("(?s)const\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*`([^`]*)`")
-
+// loadGoldenIndex parses each testdata/*.go via Go's AST and indexes every
+// top-level string const by its (trimmed) string value. The AST is necessary
+// here because some golden consts include literal backticks (e.g. protoc-
+// emitted descriptions referencing Go-style `int64`) which can't be encoded
+// as raw-string literals — those declarations use concatenation form like
+// `parta` + "`" + `partb`, which a naive regex would mis-parse.
 func loadGoldenIndex() (map[string]goldenLocation, error) {
 	goldenIndexOnce.Do(func() {
 		idx := map[string]goldenLocation{}
@@ -655,14 +659,34 @@ func loadGoldenIndex() (map[string]goldenLocation, error) {
 				continue
 			}
 			path := filepath.Join("testdata", e.Name())
-			b, err := os.ReadFile(path)
+			fset := token.NewFileSet()
+			file, err := parser.ParseFile(fset, path, nil, 0)
 			if err != nil {
-				goldenIndexErr = fmt.Errorf("reading %s: %w", path, err)
+				goldenIndexErr = fmt.Errorf("parsing %s: %w", path, err)
 				return
 			}
-			for _, m := range goldenConstRE.FindAllSubmatch(b, -1) {
-				key := strings.TrimSpace(string(m[2]))
-				idx[key] = goldenLocation{filePath: path, constName: string(m[1])}
+			for _, decl := range file.Decls {
+				gen, ok := decl.(*ast.GenDecl)
+				if !ok || gen.Tok != token.CONST {
+					continue
+				}
+				for _, spec := range gen.Specs {
+					vs, ok := spec.(*ast.ValueSpec)
+					if !ok {
+						continue
+					}
+					for i, name := range vs.Names {
+						if i >= len(vs.Values) {
+							continue
+						}
+						val, ok := evalConstString(vs.Values[i])
+						if !ok {
+							continue
+						}
+						key := strings.TrimSpace(val)
+						idx[key] = goldenLocation{filePath: path, constName: name.Name}
+					}
+				}
 			}
 		}
 		goldenIndex = idx
@@ -672,14 +696,13 @@ func loadGoldenIndex() (map[string]goldenLocation, error) {
 
 // updateGoldenForExpected looks up the const whose current value matches
 // `expected` and rewrites its body to `actual` in the corresponding
-// testdata/*.go file. Surgical replacement preserves any other consts in
-// the same file (e.g. <Name>Fail / <Name>Pass).
+// testdata/*.go file. Uses AST byte offsets to find and replace just the
+// targeted const's value expression — preserves sibling consts (e.g.
+// <Name>Fail / <Name>Pass) in the same file and works even when the
+// existing value expression is a concatenation of raw and double-quoted
+// segments (as required for goldens that contain literal backticks).
 func updateGoldenForExpected(t *testing.T, expected, actual string) error {
 	t.Helper()
-
-	if strings.ContainsRune(actual, '`') {
-		return fmt.Errorf("actual content contains a backtick; cannot encode as raw-string const")
-	}
 
 	idx, err := loadGoldenIndex()
 	if err != nil {
@@ -690,38 +713,106 @@ func updateGoldenForExpected(t *testing.T, expected, actual string) error {
 		return fmt.Errorf("no testdata const matched the expected JSON (len=%d); add the const first or check for drift", len(expected))
 	}
 
-	b, err := os.ReadFile(loc.filePath)
+	src, err := os.ReadFile(loc.filePath)
 	if err != nil {
 		return fmt.Errorf("reading %s: %w", loc.filePath, err)
 	}
 
-	// Replace just the targeted const's body. We anchor on the exact const
-	// name to avoid clobbering sibling Fail/Pass consts. Use a func-based
-	// replacement so `$` in `actual` (e.g. "$schema", "$ref") is treated
-	// literally rather than as a regexp substitution token.
-	pattern := regexp.MustCompile("(?s)(const\\s+" + regexp.QuoteMeta(loc.constName) + "\\s*=\\s*`)[^`]*(`)")
-	if !pattern.Match(b) {
-		return fmt.Errorf("regex failed to locate const %s in %s", loc.constName, loc.filePath)
-	}
-	updated := pattern.ReplaceAllFunc(b, func(match []byte) []byte {
-		sub := pattern.FindSubmatchIndex(match)
-		prefix := match[sub[2]:sub[3]] // group 1: `const Name = ` + backtick
-		suffix := match[sub[4]:sub[5]] // group 2: trailing backtick
-		out := make([]byte, 0, len(prefix)+len(actual)+len(suffix))
-		out = append(out, prefix...)
-		out = append(out, actual...)
-		out = append(out, suffix...)
-		return out
-	})
-	if bytes.Equal(updated, b) {
-		// Content already up to date — no-op.
-		return nil
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, loc.filePath, src, 0)
+	if err != nil {
+		return fmt.Errorf("parsing %s: %w", loc.filePath, err)
 	}
 
-	if err := os.WriteFile(loc.filePath, updated, 0644); err != nil {
+	var valueExpr ast.Expr
+	for _, decl := range file.Decls {
+		gen, ok := decl.(*ast.GenDecl)
+		if !ok || gen.Tok != token.CONST {
+			continue
+		}
+		for _, spec := range gen.Specs {
+			vs, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+			for i, name := range vs.Names {
+				if name.Name == loc.constName && i < len(vs.Values) {
+					valueExpr = vs.Values[i]
+				}
+			}
+		}
+	}
+	if valueExpr == nil {
+		return fmt.Errorf("AST: const %s not found in %s", loc.constName, loc.filePath)
+	}
+
+	startOffset := fset.Position(valueExpr.Pos()).Offset
+	endOffset := fset.Position(valueExpr.End()).Offset
+
+	literal := goldenLiteral(actual)
+
+	var out bytes.Buffer
+	out.Write(src[:startOffset])
+	out.WriteString(literal)
+	out.Write(src[endOffset:])
+
+	if bytes.Equal(out.Bytes(), src) {
+		return nil
+	}
+	if err := os.WriteFile(loc.filePath, out.Bytes(), 0644); err != nil {
 		return fmt.Errorf("writing %s: %w", loc.filePath, err)
 	}
 
 	t.Logf("UPDATE_GOLDENS: rewrote const %s in %s", loc.constName, loc.filePath)
 	return nil
+}
+
+// goldenLiteral encodes `s` as a Go string expression suitable for writing
+// into a `const X = ...` declaration. Uses a raw-string literal for the
+// common case; falls back to concatenation of raw-string and double-quoted
+// segments when `s` contains a backtick (which can't appear inside a
+// raw-string). The concatenation form looks like:
+//
+//	`parta` + "`" + `partb`
+//
+// preserving multi-line JSON readability for the common case.
+func goldenLiteral(s string) string {
+	if !strings.ContainsRune(s, '`') {
+		return "`" + s + "`"
+	}
+	parts := strings.Split(s, "`")
+	sep := "` + \"`\" + `"
+	return "`" + strings.Join(parts, sep) + "`"
+}
+
+// evalConstString evaluates a Go AST expression and returns its string value
+// if the expression is a string literal (raw or double-quoted) or a string
+// concatenation of such literals (e.g. `a` + "`" + `b`). Returns (s, true)
+// on success; (_, false) when the expression isn't a constant string.
+func evalConstString(expr ast.Expr) (string, bool) {
+	switch e := expr.(type) {
+	case *ast.BasicLit:
+		if e.Kind != token.STRING {
+			return "", false
+		}
+		s, err := strconv.Unquote(e.Value)
+		if err != nil {
+			return "", false
+		}
+		return s, true
+	case *ast.BinaryExpr:
+		if e.Op != token.ADD {
+			return "", false
+		}
+		lhs, lok := evalConstString(e.X)
+		if !lok {
+			return "", false
+		}
+		rhs, rok := evalConstString(e.Y)
+		if !rok {
+			return "", false
+		}
+		return lhs + rhs, true
+	}
+	return "", false
 }
