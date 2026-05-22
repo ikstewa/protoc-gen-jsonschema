@@ -1,7 +1,6 @@
 package converter
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -305,17 +304,17 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Format = "date-time"
 		case ".google.protobuf.Value", ".google.protobuf.Struct":
 			jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
-			jsonSchemaType.AdditionalProperties = []byte("true")
+			jsonSchemaType.AdditionalProperties = schemaAllowAny()
 		default:
 			jsonSchemaType.Type = gojsonschema.TYPE_OBJECT
 			if desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_OPTIONAL {
-				jsonSchemaType.AdditionalProperties = []byte("true")
+				jsonSchemaType.AdditionalProperties = schemaAllowAny()
 			}
 			if desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED {
-				jsonSchemaType.AdditionalProperties = []byte("false")
+				jsonSchemaType.AdditionalProperties = schemaAllowNone()
 			}
 			if messageFlags.DisallowAdditionalProperties {
-				jsonSchemaType.AdditionalProperties = []byte("false")
+				jsonSchemaType.AdditionalProperties = schemaAllowNone()
 			}
 		}
 
@@ -394,12 +393,9 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 				return nil, fmt.Errorf("Unable to find 'value' property of MAP type")
 			}
 
-			// Marshal the "value" properties to JSON (because that's how we can pass on AdditionalProperties):
-			additionalPropertiesJSON, err := json.Marshal(value)
-			if err != nil {
-				return nil, err
-			}
-			jsonSchemaType.AdditionalProperties = additionalPropertiesJSON
+			// Pass the "value" schema through as AdditionalProperties (now typed
+			// *jsonschema.Schema in invopop, no JSON-marshal indirection needed):
+			jsonSchemaType.AdditionalProperties = value
 
 		// Arrays:
 		case desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REPEATED:
@@ -658,9 +654,9 @@ func (c *Converter) recursiveConvertMessageType(curPkg *ProtoPackage, msgDesc *d
 
 	// disallowAdditionalProperties will prevent validation where extra fields are found (outside of the schema):
 	if messageFlags.DisallowAdditionalProperties {
-		jsonSchemaType.AdditionalProperties = []byte("false")
+		jsonSchemaType.AdditionalProperties = schemaAllowNone()
 	} else {
-		jsonSchemaType.AdditionalProperties = []byte("true")
+		jsonSchemaType.AdditionalProperties = schemaAllowAny()
 	}
 
 	c.logger.WithField("message_str", msgDesc.String()).Trace("Converting message")
@@ -775,4 +771,18 @@ func dedupe(inputStrings []string) []string {
 // invopop/jsonschema fields like MaxLength / MaxItems which are typed *uint64.
 func ptrUint64(v uint64) *uint64 {
 	return &v
+}
+
+// schemaAllowAny is a JSON Schema Draft 2020-12 schema that matches any value.
+// Equivalent to the boolean schema `true`. Use for additionalProperties when
+// the converter wants to explicitly state "any additional properties allowed."
+func schemaAllowAny() *jsonschema.Schema {
+	return &jsonschema.Schema{}
+}
+
+// schemaAllowNone is a JSON Schema Draft 2020-12 schema that matches no value.
+// Equivalent to the boolean schema `false`. Use for additionalProperties when
+// the converter wants to disallow any additional properties.
+func schemaAllowNone() *jsonschema.Schema {
+	return &jsonschema.Schema{Not: &jsonschema.Schema{}}
 }
