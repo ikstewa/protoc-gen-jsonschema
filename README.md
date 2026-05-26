@@ -98,6 +98,7 @@ protoc \
 |`enums_as_strings_only`| Only include strings in the allowed values for enums |
 |`file_extension`| Specify a custom file extension for generated schemas |
 |`include_numeric_format`| Include OAS formats for numeric types |
+|`include_numeric_bounds`| Emit `minimum`/`maximum` matching each numeric scalar's protobuf range (int32 ±2³¹−1, uint32 0–2³²−1, int64 ±2⁶³−1, uint64 0–2⁶⁴−1, float/double IEEE 754 finite extremes). int64-class fields are skipped when emitted as JSON strings (proto3 default); pair with `disallow_bigints_as_strings` to apply 64-bit bounds. |
 |`json_fieldnames`| Use JSON field names only |
 |`prefix_schema_files_with_package`| Prefix the output filename with package |
 |`proto_and_json_fieldnames`| Use proto and JSON field names |

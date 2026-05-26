@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -118,6 +119,9 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 				jsonSchemaType.Format = "float"
 			}
 		}
+		if c.Flags.IncludeNumericBounds {
+			applyNumericBounds(jsonSchemaType, desc.GetType())
+		}
 
 	// Double:
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
@@ -138,6 +142,9 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "double"
 			}
+		}
+		if c.Flags.IncludeNumericBounds {
+			applyNumericBounds(jsonSchemaType, desc.GetType())
 		}
 
 	// Int32:
@@ -163,6 +170,9 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			if c.Flags.IncludeNumericFormat {
 				jsonSchemaType.Format = "int32"
 			}
+		}
+		if c.Flags.IncludeNumericBounds {
+			applyNumericBounds(jsonSchemaType, desc.GetType())
 		}
 
 	// Int64:
@@ -214,6 +224,9 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 					jsonSchemaType.Format = "int64"
 				}
 			}
+		}
+		if c.Flags.IncludeNumericBounds {
+			applyNumericBounds(jsonSchemaType, desc.GetType())
 		}
 
 	// String:
@@ -356,7 +369,11 @@ func (c *Converter) convertField(curPkg *ProtoPackage, desc *descriptor.FieldDes
 			jsonSchemaType.Items.Type = jsonSchemaType.Type
 			jsonSchemaType.Items.OneOf = jsonSchemaType.OneOf
 			jsonSchemaType.Items.Format = jsonSchemaType.Format
+			jsonSchemaType.Items.Minimum = jsonSchemaType.Minimum
+			jsonSchemaType.Items.Maximum = jsonSchemaType.Maximum
 			jsonSchemaType.Format = ""
+			jsonSchemaType.Minimum = ""
+			jsonSchemaType.Maximum = ""
 		}
 
 		if messageFlags.AllowNullValues {
@@ -818,4 +835,60 @@ func schemaAllowAny() *jsonschema.Schema {
 // additional properties.
 func schemaAllowNone() *jsonschema.Schema {
 	return jsonschema.FalseSchema
+}
+
+// numericBounds returns the inclusive (minimum, maximum) pair for a protobuf
+// numeric scalar type. The bool indicates whether the type is numeric at all.
+//
+// Bound values are encoded as json.Number string literals so that uint64's
+// 2^64-1 and float64's ±1.8e308 round-trip without lossy conversion through a
+// Go int (which would overflow on 32-bit hosts) or a float64 (which can only
+// approximate the 64-bit integer extremes).
+func numericBounds(protoType descriptor.FieldDescriptorProto_Type) (min, max json.Number, ok bool) {
+	switch protoType {
+	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+		return "-3.4028234663852886e+38", "3.4028234663852886e+38", true
+	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+		return "-1.7976931348623157e+308", "1.7976931348623157e+308", true
+	case descriptor.FieldDescriptorProto_TYPE_INT32,
+		descriptor.FieldDescriptorProto_TYPE_SINT32,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED32:
+		return "-2147483648", "2147483647", true
+	case descriptor.FieldDescriptorProto_TYPE_UINT32,
+		descriptor.FieldDescriptorProto_TYPE_FIXED32:
+		return "0", "4294967295", true
+	case descriptor.FieldDescriptorProto_TYPE_INT64,
+		descriptor.FieldDescriptorProto_TYPE_SINT64,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+		return "-9223372036854775808", "9223372036854775807", true
+	case descriptor.FieldDescriptorProto_TYPE_UINT64,
+		descriptor.FieldDescriptorProto_TYPE_FIXED64:
+		return "0", "18446744073709551615", true
+	}
+	return "", "", false
+}
+
+// applyNumericBounds attaches minimum/maximum to a schema produced for a
+// protobuf numeric scalar. For nullable fields the schema is a OneOf of null +
+// the typed branch, and bounds are applied to the typed branch. The string
+// variant of int64-class fields (proto3's default JSON encoding) is skipped:
+// JSON Schema numeric bounds apply only to integer/number-typed schemas.
+func applyNumericBounds(schema *jsonschema.Schema, protoType descriptor.FieldDescriptorProto_Type) {
+	min, max, ok := numericBounds(protoType)
+	if !ok {
+		return
+	}
+	if len(schema.OneOf) > 0 {
+		for _, branch := range schema.OneOf {
+			if branch.Type == jsTypeInteger || branch.Type == jsTypeNumber {
+				branch.Minimum = min
+				branch.Maximum = max
+			}
+		}
+		return
+	}
+	if schema.Type == jsTypeInteger || schema.Type == jsTypeNumber {
+		schema.Minimum = min
+		schema.Maximum = max
+	}
 }
