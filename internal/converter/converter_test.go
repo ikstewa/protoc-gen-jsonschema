@@ -342,6 +342,18 @@ func configureSampleProtos() map[string]sampleProto {
 			FilesToGenerate:       []string{"NumericFormat.proto"},
 			ProtoFileName:         "NumericFormat.proto",
 		},
+		"NumericBounds": {
+			Flags:                 ConverterFlags{IncludeNumericBounds: true},
+			ExpectedJSONSchema:    []string{testdata.NumericBounds},
+			FilesToGenerate:       []string{"NumericBounds.proto"},
+			ProtoFileName:         "NumericBounds.proto",
+		},
+		"NumericBoundsBigIntAsString": {
+			Flags:                 ConverterFlags{IncludeNumericBounds: true, DisallowBigIntsAsStrings: true},
+			ExpectedJSONSchema:    []string{testdata.NumericBoundsBigIntAsString},
+			FilesToGenerate:       []string{"NumericBounds.proto"},
+			ProtoFileName:         "NumericBounds.proto",
+		},
 		"OneOf": {
 			Flags:                 ConverterFlags{AllFieldsRequired: true, EnforceOneOf: true},
 			ExpectedJSONSchema:    []string{testdata.OneOf},
